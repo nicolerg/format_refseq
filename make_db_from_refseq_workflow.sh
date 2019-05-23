@@ -29,7 +29,7 @@ for db in viral bacteria archaea fungi; do
 
 	# get a list of files on the FTP server 
 	cd ${base}/${db}
-	curl ftp://ftp.ncbi.nlm.nih.gov/refseq/release/${db}/ > tmp
+	curl --retry 10 ftp://ftp.ncbi.nlm.nih.gov/refseq/release/${db}/ > tmp
 	grep "genomic.fna" tmp | sed "s/.* //" | head -2 > file_list
 
 	# download FNA files 
