@@ -101,6 +101,6 @@ done
 
 for db in viral bacteria archaea fungi; do
 	for fna in `ls ${base}/${db} | grep "genomic.fna"`; do 
-		python2 ${srcdir}/replace_fna_headers.py ${base}/${db}/${fna} ${base}/_${db}/headers_map.tsv &
+		python2 ${srcdir}/replace_fna_headers.py ${base}/${db}/${fna} ${base}/headers_map.tsv &
 	done 
 done 
