@@ -30,7 +30,7 @@ for db in viral bacteria archaea fungi; do
 	# get a list of files on the FTP server 
 	cd ${base}/${db}
 	curl ftp://ftp.ncbi.nlm.nih.gov/refseq/release/${db}/ > tmp
-	cut -f 16 -d ' ' tmp | grep "genomic.fna" | head -3 > file_list
+	grep "genomic.fna" tmp | sed "s/.* //" | head -2 > file_list
 
 	# download FNA files 
 	while read f; do
@@ -41,7 +41,7 @@ for db in viral bacteria archaea fungi; do
 
 	# download GBFF files (used to make headers)
 	cd ${base}/_${db}
-	cut -f 16 -d ' ' ${base}/${db}/tmp | grep "genomic.gbff" | head -3 > file_list
+	grep "genomic.gbff" ${base}/${db}/tmp | sed "s/.* //" | head -2 > file_list
 	while read f; do
 		if [ ! -f "${base}/_${db}/${f}" ]; then 
 			wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/${db}/${f}
