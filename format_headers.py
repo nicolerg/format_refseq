@@ -93,7 +93,7 @@ with gzip.open(gbff,'rb') as refseq:
 					line = read_nonempty(refseq)
 					l = line.strip().split()
 
-					while l[0] != l[0].toupper():
+					while l[0] != l[0].upper():
 
 						line = line.strip()
 						line = line.replace(',', '')
