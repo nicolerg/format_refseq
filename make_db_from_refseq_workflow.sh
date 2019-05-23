@@ -17,7 +17,7 @@ if [ ! -d "${base}/src/format_refseq" ]; then
 	cd ${base}/src
 	git clone http://github.com/nicolerg/format_refseq.git
 fi
-srcdir=${base}/src/format_refseq
+srcdir=~/format_refseq
 
 ################################################################################################################################  
 ## download RefSeq files 
@@ -29,7 +29,7 @@ for db in viral bacteria archaea fungi; do
 
 	# get a list of files on the FTP server 
 	cd ${base}/${db}
-	curl --retry 10 ftp://ftp.ncbi.nlm.nih.gov/refseq/release/${db}/ > tmp
+	curl --max-time 30 --retry 10 ftp://ftp.ncbi.nlm.nih.gov/refseq/release/${db}/ > tmp
 	grep "genomic.fna" tmp | sed "s/.* //" | head -2 > file_list
 
 	# download FNA files 
@@ -76,8 +76,12 @@ for db in viral bacteria archaea fungi; do
 		python2 ${srcdir}/format_headers.py ${base}/_${db}/${gbff} &
 	done 
 done 
-wait
-exit
+wait 
+
+# merge *headers_map.tsv files
+for dir in viral bacteria archaea fungi; do
+	cat ${base}/_${dir}/*headers_map.tsv >> ${base}/headers_map.tsv
+done
 
 ################################################################################################################################  
 ## use maps to convert headers in FNA files (qsub)
