@@ -50,8 +50,8 @@ for db in viral bacteria archaea fungi; do
 	done < file_list
 
 	rm ${base}/${db}/tmp
-	rm ${base}/_${db}/file_list
-	rm ${base}/${db}/file_list
+	#rm ${base}/_${db}/file_list
+	#rm ${base}/${db}/file_list
 
 done 
 
