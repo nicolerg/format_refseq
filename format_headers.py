@@ -9,7 +9,7 @@ gbff = sys.argv[1] # viral.1.genomic.gbff.gz
 
 print gbff
 
-outdir = os.path.dirname(infile)
+outdir = os.path.dirname(gbff)
 outfile = outdir + '/headers_map.tsv'
 
 '''
