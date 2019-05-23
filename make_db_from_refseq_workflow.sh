@@ -7,6 +7,7 @@ set -e
 ## download viral, bacterial + archaeal, fungal RefSeq databases; reformat headers; make allpairs files
 
 base=$1
+mkdir -p $base
 
 ################################################################################################################################  
 ## download code from GitHub 
