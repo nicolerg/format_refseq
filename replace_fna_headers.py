@@ -24,7 +24,6 @@ version_to_header = {}
 
 # read in map 
 with open(header_map, 'rb') as m:
-	next(m)
 	for line in m:
 		l = line.strip().split()
 		version_to_header[l[0]] = l[1]
@@ -35,9 +34,10 @@ with gzip.open(fna, 'rb') as infile, gzip.open(outfile, 'wb') as out:
 		if line.startswith('>'):
 			version = line.strip().split()[0].replace('>','')
 			if not version in version_to_header:
-				print 'Uh-oh, {0} was not found in the version-to-header map.'.format(version)
-				exit()
-			header = version_to_header[version]
-			out.write(header+'\n')
+				print 'Uh-oh, {0} was not found in the version-to-header map. {1}'.format(version,fna)
+				out.write(line.strip()+'\n')
+			else:
+				header = version_to_header[version]
+				out.write(header+'\n')
 		else:
 			out.write(line.strip()+'\n')

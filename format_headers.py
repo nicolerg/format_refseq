@@ -9,8 +9,8 @@ gbff = sys.argv[1] # viral.1.genomic.gbff.gz
 
 print gbff
 
-outdir = os.path.dirname(infile)
-outfile = outdir + '/headers_map.tsv'
+outdir = os.path.dirname(gbff)
+outfile = outdir + '/' + os.path.basename(gbff).replace('gbff.gz','headers_map.tsv')
 
 '''
 Author: Nicole Gay nicole.r.gay@gmail.com
@@ -45,8 +45,6 @@ REFERENCE   1  (bases 1 to 154675)
 '''
 
 # need to make a map of accessions to desired headers 
-
-version_to_header = {}
  
 def read_nonempty(file_handle):
 	line = file_handle.readline()
@@ -56,7 +54,7 @@ def read_nonempty(file_handle):
 		l = line.strip().split()
 	return line 
 
-with gzip.open(gbff,'rb') as refseq:
+with gzip.open(gbff,'rb') as refseq, open(outfile, 'wb') as out:
 
 	line = refseq.readline()
 
@@ -78,7 +76,8 @@ with gzip.open(gbff,'rb') as refseq:
 			line = read_nonempty(refseq)
 			l = line.strip().split()
 
-			while l[0] != 'AUTHORS':
+			done=False
+			while not done:
 
 				if l[0] == 'ACCESSION':
 					accn = l[1]
@@ -93,7 +92,7 @@ with gzip.open(gbff,'rb') as refseq:
 					line = read_nonempty(refseq)
 					l = line.strip().split()
 
-					while l[0] != 'REFERENCE':
+					while l[0] != l[0].upper():
 
 						line = line.strip()
 						line = line.replace(',', '')
@@ -111,18 +110,19 @@ with gzip.open(gbff,'rb') as refseq:
 					taxonomy = taxonomy + org 
 
 					header = '>ACCN:{0}|{1}'.format(accn,taxonomy)
-					version_to_header[vers] = header
+					out.write(vers+'\t'+header+'\n')
+
+					accn = ''
+					org = ''
+					accn = ''
+					version = ''
+					taxonomy = ''
+					header = ''
+
+					done=True
 
 				line = read_nonempty(refseq)
 				l = line.strip().split()
 
 		line = refseq.readline()
-
-header_map = pd.DataFrame.from_dict(version_to_header, orient='index', columns=['HEADER'])
-
-# append to map if it exists 
-if os.path.exists(outfile):
-	header_map.to_csv(outfile,sep='\t',header=False,mode='a')
-else:
-	header_map.to_csv(outfile,sep='\t',header=True,index=True,index_label='ACCESSION')
 
