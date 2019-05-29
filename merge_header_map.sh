@@ -5,7 +5,6 @@
 #PBS -o log/merge_header_map_$PBS_ARRAYID.log 
 #PBS -N merge_header
 
-echo 'format_headers job array is complete'
 # merge *headers_map.tsv files
 for dir in viral bacteria archaea fungi; do
 	cat _${dir}/*headers_map.tsv >> headers_map.tsv
