@@ -6,5 +6,5 @@
 echo 'format_headers job array is complete'
 # merge *headers_map.tsv files
 for dir in viral bacteria archaea fungi; do
-	cat ${base}/_${dir}/*headers_map.tsv >> ${base}/headers_map.tsv
+	cat ${BASE}/_${dir}/*headers_map.tsv >> ${BASE}/headers_map.tsv
 done
