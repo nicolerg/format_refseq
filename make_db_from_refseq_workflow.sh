@@ -71,7 +71,14 @@ done
 
 num_tasks1=$(cat ${base}/gbff_list | wc -l)
 
-qsub -v SRCDIR=${srcdir},BASE=${base} -N format_headers -t 1-$num_tasks1 -o ${base}/log/format_headers_$PBS_ARRAYID.log ${srcdir}/format_headers.sh
+echo $num_tasks1
+echo $srcdir 
+
+echo 'about to submit format_headers.sh'
+
+qsub -wd ${base} -v SRCDIR=${srcdir} -w e -N format_headers -t 1-$num_tasks1 ${srcdir}/format_headers.sh
+
+echo 'just past format_headers qsub'
 
 # for db in viral bacteria archaea fungi; do
 # 	for gbff in `ls ${base}/_${db} | grep "genomic.gbff"`; do 
@@ -81,7 +88,7 @@ qsub -v SRCDIR=${srcdir},BASE=${base} -N format_headers -t 1-$num_tasks1 -o ${ba
 # wait 
 
 # merge headers
-qsub -v BASE=${base} -hold_jid format_headers -N merge_maps ${srcdir}/merge_header_map.sh
+qsub -wd ${base} -hold_jid format_headers -N merge_maps ${srcdir}/merge_header_map.sh
 
 # # merge *headers_map.tsv files
 # for dir in viral bacteria archaea fungi; do
@@ -108,4 +115,4 @@ done
 num_tasks2=$(cat ${base}/fna_list | wc -l)
 
 # this needs to wait until JOB1 has finished 
-qsub -v SRCDIR=${srcdir},BASE=${base} -hold_jid format_headers,merge_maps -N replace_headers -o ${base}/log/replace_headers_$PBS_ARRAYID.log -t 1-$num_tasks2 ${srcdir}/replace_fna_headers.sh
+qsub -wd ${base} -v SRCDIR=${srcdir} -hold_jid format_headers,merge_maps -N replace_headers -t 1-$num_tasks2 ${srcdir}/replace_fna_headers.sh
