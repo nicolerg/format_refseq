@@ -88,7 +88,7 @@ echo 'just past format_headers qsub'
 # wait 
 
 # merge headers
-qsub -wd ${base} -hold_jid format_headers -N merge_maps ${srcdir}/merge_header_map.sh
+qsub -wd ${base} -hold_jid_ad format_headers -N merge_maps ${srcdir}/merge_header_map.sh
 
 # # merge *headers_map.tsv files
 # for dir in viral bacteria archaea fungi; do
@@ -115,4 +115,4 @@ done
 num_tasks2=$(cat ${base}/fna_list | wc -l)
 
 # this needs to wait until JOB1 has finished 
-qsub -wd ${base} -v SRCDIR=${srcdir} -hold_jid format_headers,merge_maps -N replace_headers -t 1-$num_tasks2 ${srcdir}/replace_fna_headers.sh
+qsub -wd ${base} -v SRCDIR=${srcdir} -hold_jid merge_maps -N replace_headers -t 1-$num_tasks2 ${srcdir}/replace_fna_headers.sh
