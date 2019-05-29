@@ -76,7 +76,9 @@ echo $srcdir
 
 echo 'about to submit format_headers.sh'
 
-qsub -wd ${base} -V -t 1-$num_tasks1 ${srcdir}/format_headers.sh
+JOB1=`qsub -d ${base} -V -t 1-$num_tasks1 ${srcdir}/format_headers.sh`
+JOB1=`echo $JOB1 | sed "s/\..*//"`
+echo $JOB1
 
 echo 'just past format_headers qsub'
 
@@ -88,7 +90,9 @@ echo 'just past format_headers qsub'
 # wait 
 
 # merge headers
-qsub -wd ${base} -hold_jid_ad format_headers ${srcdir}/merge_header_map.sh
+JOB2=`qsub -d ${base} -V -W depend=afterokarray:$JOB1 ${srcdir}/merge_header_map.sh`
+JOB2=`echo $JOB2 | sed "s/\..*//"`
+echo $JOB2
 
 # # merge *headers_map.tsv files
 # for dir in viral bacteria archaea fungi; do
@@ -115,4 +119,4 @@ done
 num_tasks2=$(cat ${base}/fna_list | wc -l)
 
 # this needs to wait until JOB1 has finished 
-qsub -wd ${base} -hold_jid merge_header -t 1-$num_tasks2 ${srcdir}/replace_fna_headers.sh
+qsub -d ${base} -V -W depend=afterok:$JOB2 merge_header -t 1-$num_tasks2 ${srcdir}/replace_fna_headers.sh
