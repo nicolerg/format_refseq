@@ -68,19 +68,16 @@ for db in viral bacteria archaea fungi; do
 		echo ${base}/_${db}/${gbff} >> ${base}/gbff_list
 	done 
 done 
+# remove redundant lines 
+cat ${base}/gbff_list | sort | uniq > ${base}/tmp_list
+rm ${base}/gbff_list
+mv ${base}/tmp_list ${base}/gbff_list
 
 num_tasks1=$(cat ${base}/gbff_list | wc -l)
 
-echo $num_tasks1
-echo $srcdir 
-
-echo 'about to submit format_headers.sh'
-
-JOB1=`qsub -d ${base} -V -t 1-$num_tasks1 ${srcdir}/format_headers.sh`
+JOB1=`qsub -N format_headers -V -t 1-${num_tasks1} -o ${base}/log/format_headers_$PBS_ARRAYID.log ${srcdir}/format_headers.sh`
 JOB1=`echo $JOB1 | sed "s/\..*//"`
 echo $JOB1
-
-echo 'just past format_headers qsub'
 
 # for db in viral bacteria archaea fungi; do
 # 	for gbff in `ls ${base}/_${db} | grep "genomic.gbff"`; do 
@@ -89,10 +86,30 @@ echo 'just past format_headers qsub'
 # done 
 # wait 
 
+echo 'Waiting for format_headers to finish...'
+# loop to wait until JOB1 is done 
+job1_status=$(qstat -u $(whoami) | grep 'format_headers')
+while [ ! -z "$job1_status" ]; do 
+	sleep 60
+	job1_status=$(qstat -u $(whoami) | grep 'format_headers')
+done
+echo 'format_headers job array exited.'
+echo
+
 # merge headers
-JOB2=`qsub -d ${base} -V -W depend=afterokarray:$JOB1 ${srcdir}/merge_header_map.sh`
+JOB2=`qsub -N merge_header_map -V -o ${base}/log/merge_header_map_$PBS_ARRAYID.log ${srcdir}/merge_header_map.sh`
 JOB2=`echo $JOB2 | sed "s/\..*//"`
 echo $JOB2
+
+echo 'Waiting for merge_header_map to finish...'
+# loop to wait until JOB2 is done 
+job2_status=$(qstat -u $(whoami) | grep 'merge_header_map')
+while [ ! -z "$job2_status" ]; do 
+	sleep 60
+	job2_status=$(qstat -u $(whoami) | grep 'merge_header_map')
+done
+echo 'merge_header_map job exited.'
+echo
 
 # # merge *headers_map.tsv files
 # for dir in viral bacteria archaea fungi; do
@@ -118,5 +135,16 @@ done
 
 num_tasks2=$(cat ${base}/fna_list | wc -l)
 
-# this needs to wait until JOB1 has finished 
-qsub -d ${base} -V -W depend=afterok:$JOB2 merge_header -t 1-$num_tasks2 ${srcdir}/replace_fna_headers.sh
+JOB3=`qsub -V -N replace_fna_headers -o ${base}/log/replace_fna_headers_$PBS_ARRAYID.log -t 1-$num_tasks2 ${srcdir}/replace_fna_headers.sh`
+JOB3=`echo $JOB3 | sed "s/\..*//"`
+echo $JOB3
+
+echo 'Waiting for replace_fna_headers to finish...'
+# loop to wait until JOB3 is done 
+job3_status=$(qstat -u $(whoami) | grep 'replace_fna_headers')
+while [ ! -z "$job3_status" ]; do 
+	sleep 300
+	job3_status=$(qstat -u $(whoami) | grep 'replace_fna_headers')
+done
+echo 'replace_fna_headers job array exited.'
+echo
