@@ -4,5 +4,5 @@
 
 module load python/2.7.13
 
-INFILE=$(awk "NR==$PBS_ARRAYID" ${base}/fna_list)
-python2 ${srcdir}/replace_fna_headers.py $INFILE ${base}/headers_map.tsv
+INFILE=$(awk "NR==$PBS_ARRAYID" fna_list)
+python2 ${SRCDIR}/replace_fna_headers.py $INFILE headers_map.tsv
