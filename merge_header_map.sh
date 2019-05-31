@@ -5,5 +5,5 @@
 
 # merge *headers_map.tsv files
 for dir in viral bacteria archaea fungi; do
-	cat _${dir}/*headers_map.tsv >> headers_map.tsv
+	cat ${BASEDIR}/_${dir}/*headers_map.tsv >> ${BASEDIR}/headers_map.tsv
 done
