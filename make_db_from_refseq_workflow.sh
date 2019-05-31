@@ -77,7 +77,7 @@ mv ${base}/tmp_list ${base}/gbff_list
 
 num_tasks1=$(cat ${base}/gbff_list | wc -l)
 
-JOB1=`qsub -d ${base} -N format_headers -V -v SRCDIR=${srcdir} -t 1-${num_tasks1} -o log/format_headers_$PBS_ARRAYID-o.log -e log/format_headers_$PBS_ARRAYID-e.log ${srcdir}/format_headers.sh`
+JOB1=`qsub -d ${base} -w ${base} -N format_headers -V -v SRCDIR=${srcdir},BASEDIR=${base} -t 1-${num_tasks1} -o log/format_headers_$PBS_ARRAYID-o.log -e log/format_headers_$PBS_ARRAYID-e.log ${srcdir}/format_headers.sh`
 JOB1=`echo $JOB1 | sed "s/\..*//"`
 echo $JOB1
 
@@ -99,7 +99,7 @@ echo 'format_headers job array exited.'
 echo
 
 # merge headers
-JOB2=`qsub -d ${base} -N merge_header_map -V -v SRCDIR=${srcdir} -o log/merge_header_map_$PBS_JOBID-o.log -e log/merge_header_map_$PBS_JOBID-e.log ${srcdir}/merge_header_map.sh`
+JOB2=`qsub -d ${base} -w ${base} -N merge_header_map -V -v SRCDIR=${srcdir},BASEDIR=${base} -o log/merge_header_map_$PBS_JOBID-o.log -e log/merge_header_map_$PBS_JOBID-e.log ${srcdir}/merge_header_map.sh`
 JOB2=`echo $JOB2 | sed "s/\..*//"`
 echo $JOB2
 
@@ -137,7 +137,7 @@ done
 
 num_tasks2=$(cat ${base}/fna_list | wc -l)
 
-JOB3=`qsub -d ${base} -V -v SRCDIR=${srcdir} -N replace_fna_headers -o log/replace_fna_headers_$PBS_ARRAYID-o.log -e log/replace_fna_headers_$PBS_ARRAYID-e.log -t 1-$num_tasks2 ${srcdir}/replace_fna_headers.sh`
+JOB3=`qsub -d ${base} -w ${base} -V -v SRCDIR=${srcdir},BASEDIR=${base} -N replace_fna_headers -o log/replace_fna_headers_$PBS_ARRAYID-o.log -e log/replace_fna_headers_$PBS_ARRAYID-e.log -t 1-$num_tasks2 ${srcdir}/replace_fna_headers.sh`
 JOB3=`echo $JOB3 | sed "s/\..*//"`
 echo $JOB3
 
