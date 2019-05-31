@@ -5,5 +5,5 @@
 
 module load python/2.7.13
 
-INFILE=$(awk "NR==$PBS_ARRAYID" gbff_list)
+INFILE=$(awk "NR==$PBS_ARRAYID" ${BASEDIR}/gbff_list)
 python2 ${SRCDIR}/format_headers.py $INFILE
