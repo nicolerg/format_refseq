@@ -88,20 +88,22 @@ echo $JOB1
 # done 
 # wait 
 
-echo 'Waiting for format_headers to finish...'
-# loop to wait until JOB1 is done 
-job1_status=$(qstat -u $(whoami) | grep 'format_headers')
-while [ ! -z "$job1_status" ]; do 
-	sleep 60
-	job1_status=$(qstat -u $(whoami) | grep 'format_headers')
-done
-echo 'format_headers job array exited.'
-echo
+# echo 'Waiting for format_headers to finish...'
+# # loop to wait until JOB1 is done 
+# job1_status=$(qstat -u $(whoami) | grep 'format_headers')
+# while [ ! -z "$job1_status" ]; do 
+# 	sleep 60
+# 	job1_status=$(qstat -u $(whoami) | grep 'format_headers')
+# done
+# echo 'format_headers job array exited.'
+# echo
 
 # merge headers
-JOB2=`qsub -d ${base} -w ${base} -N merge_header_map -V -v SRCDIR=${srcdir},BASEDIR=${base} -o log/merge_header_map_$PBS_JOBID-o.log -e log/merge_header_map_$PBS_JOBID-e.log ${srcdir}/merge_header_map.sh`
+JOB2=`qsub -W depend=afterokay:$JOB1 -d ${base} -w ${base} -N merge_header_map -V -v SRCDIR=${srcdir},BASEDIR=${base} -o log/merge_header_map_$PBS_JOBID-o.log -e log/merge_header_map_$PBS_JOBID-e.log ${srcdir}/merge_header_map.sh`
 JOB2=`echo $JOB2 | sed "s/\..*//"`
 echo $JOB2
+
+exit
 
 echo 'Waiting for merge_header_map to finish...'
 # loop to wait until JOB2 is done 
