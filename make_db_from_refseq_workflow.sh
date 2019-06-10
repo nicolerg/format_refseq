@@ -103,6 +103,8 @@ done
 echo 'format_headers job array exited.'
 echo
 
+exit
+
 # merge headers
 JOB2=`qsub -d ${base} -w ${base} -N merge_header_map -V -v SRCDIR=${srcdir},BASEDIR=${base} -o log/merge_header_map_$PBS_JOBID-o.log -e log/merge_header_map_$PBS_JOBID-e.log ${srcdir}/merge_header_map.sh`
 JOB2=`echo $JOB2 | sed "s/\..*//"`
