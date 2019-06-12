@@ -7,8 +7,6 @@ module load python/2.7.13
 
 CHUNK=$(awk "NR==$PBS_ARRAYID" ${BASEDIR}/chunk_list)
 
-while IFS= read -r INFILE; do
-
-  python2 ${SRCDIR}/format_headers.py $INFILE
-  
-done < $CHUNK
+for line in $CHUNK; do
+  python2 ${SRCDIR}/format_headers.py $line
+done 
