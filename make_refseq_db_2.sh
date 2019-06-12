@@ -20,8 +20,8 @@ num_lines_per_chunk=$((files / max_jobs))
 if [[ $num_lines_per_chunk == "0" ]]; then 
 	echo ${base}/gbff_list > ${base}/chunk_list
 else 
-	split -l $num_lines_per_chunk ${base}/gbff_list ${base}/chunk/gbff_list_chunk_
-	ls ${base}/chunk > ${base}/chunk_list
+	split -l $num_lines_per_chunk ${base}/gbff_list ${base}/chunks/gbff_list_chunk_
+	ls ${base}/chunks > ${base}/chunk_list
 	sed -i "s:^:${base}/chunk_list/:" ${base}/chunk_list
 fi
 cat ${base}/chunk_list
