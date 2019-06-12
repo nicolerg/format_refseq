@@ -74,22 +74,3 @@ done
 cat ${base}/gbff_list | sort | uniq > ${base}/tmp_list
 rm ${base}/gbff_list
 mv ${base}/tmp_list ${base}/gbff_list
-
-num_tasks1=$(cat ${base}/gbff_list | wc -l)
-
-JOB1=`qsub -d ${base} -w ${base} -N format_headers -V -v SRCDIR=${srcdir},BASEDIR=${base} -t 1-${num_tasks1} -o log/format_headers_$PBS_ARRAYID-o.log -e log/format_headers_$PBS_ARRAYID-e.log ${srcdir}/format_headers.sh`
-JOB1=`echo $JOB1 | sed "s/\..*//"`
-echo $JOB1
-
-echo 'Waiting for format_headers to finish...'
-# loop to wait until JOB1 is done 
-echo 'Entering loop...'
-job1_status=$(qstat -u $(whoami) | grep 'format_headers')
-while [ ! -z "$job1_status" ]; do 
-	echo $job1_status
-	echo 'Wait 60 more seconds...'
-	sleep 60
-	echo 'Okay, updating job1_status'
-	job1_status=$(qstat -u $(whoami) | grep 'format_headers')
-	echo $job1_status
-done
