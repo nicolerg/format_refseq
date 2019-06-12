@@ -29,7 +29,7 @@ fi
 
 num_chunks=$(cat ${base}/chunk_list | wc -l)
 
-JOB1=`qsub -d ${base} -w ${base} -N format_headers -V -v SRCDIR=${srcdir},BASEDIR=${base} -t 1-${num_chunks} -o log/format_headers_$PBS_ARRAYID-o.log -e log/format_headers_$PBS_ARRAYID-e.log ${srcdir}/format_headers_chunk.sh`
+JOB1=`qsub -d ${base} -w ${base} -N format_headers -V -v SRCDIR=${srcdir},BASEDIR=${base} -t 1-${num_chunks} ${srcdir}/format_headers_chunk.sh`
 JOB1=`echo $JOB1 | sed "s/\..*//"`
 echo $JOB1
 
