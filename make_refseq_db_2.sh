@@ -24,6 +24,7 @@ else
 	ls ${base}/chunk > ${base}/chunk_list
 	sed -i "s:^:${base}/chunk_list/:" ${base}/chunk_list
 fi
+cat ${base}/chunk_list
 
 num_chunks=$(cat ${base}/chunk_list | wc -l)
 
