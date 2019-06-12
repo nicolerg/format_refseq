@@ -9,8 +9,6 @@ set -e
 base=$1
 mkdir -p $base
 
-num_tasks1=$(cat ${base}/gbff_list | wc -l)
-
 # max number of tasks = 500
 
 mkdir -p ${base}/chunks
