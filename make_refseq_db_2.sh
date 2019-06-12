@@ -9,6 +9,8 @@ set -e
 base=$1
 mkdir -p $base
 
+srcdir=${base}/src/format_refseq
+
 # max number of tasks = 500
 
 mkdir -p ${base}/chunks
@@ -24,7 +26,6 @@ else
 	ls ${base}/chunks > ${base}/chunk_list
 	sed -i "s:^:${base}/chunk_list/:" ${base}/chunk_list
 fi
-cat ${base}/chunk_list
 
 num_chunks=$(cat ${base}/chunk_list | wc -l)
 
