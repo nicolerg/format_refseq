@@ -12,5 +12,6 @@ module load python/2.7.13
 CHUNK=$(awk "NR==$PBS_ARRAYID" ${BASEDIR}/chunk_list)
 
 for line in $CHUNK; do
+  echo Processing $line...
   python2 ${SRCDIR}/format_headers.py $line
 done 
