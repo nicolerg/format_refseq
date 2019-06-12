@@ -15,7 +15,7 @@ srcdir=${base}/src/format_refseq
 
 mkdir -p ${base}/chunks
 rm -f ${base}/chunks/*
-max_jobs=480
+max_jobs=450
 files=$(cat ${base}/gbff_list | wc -l)
 num_lines_per_chunk=$((files / max_jobs))
 
