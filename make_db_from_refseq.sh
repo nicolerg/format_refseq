@@ -3,6 +3,7 @@
 # 23 May 2019 
 
 set -e 
+module load python/2.7.13
 
 ## download viral, bacterial + archaeal, fungal RefSeq databases; reformat headers; make allpairs files
 
