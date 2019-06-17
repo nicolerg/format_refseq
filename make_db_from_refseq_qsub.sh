@@ -3,4 +3,5 @@
 #PBS -o log/make_db_from_refseq-o.log
 #PBS -e log/make_db_from_refseq-e.log
 
-/bin/bash src/format_refseq/make_db_from_refseq.sh $(pwd)
+base=/projects/oh-lab/reffiles/VirusDB.update_Anita/REFSEQ/all
+/bin/bash ${base}/src/format_refseq/make_db_from_refseq.sh ${base}
