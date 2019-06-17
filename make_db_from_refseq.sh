@@ -67,8 +67,6 @@ echo 'Done downloading RefSeq files.'
 
 cd ${base}
 
-mkdir -p ${base}/log
-
 for db in viral bacteria archaea fungi; do
 	for gbff in `ls ${base}/_${db} | grep "genomic.gbff"`; do 
 		python2 ${srcdir}/format_headers.py ${base}/_${db}/${gbff} &
