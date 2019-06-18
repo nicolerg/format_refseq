@@ -67,13 +67,17 @@ echo 'Done downloading RefSeq files.'
 ################################################################################################################################ 
 
 cd ${base}
-
 for db in viral bacteria archaea fungi; do
+	count=0
 	for gbff in `ls ${base}/_${db} | grep "genomic.gbff"`; do 
-		python2 ${srcdir}/format_headers.py ${base}/_${db}/${gbff} &
+		python2 ${srcdir}/format_headers.py ${base}/_${db}/${gbff} & 
+		count=$((count+1))
+		if [[ $count -eq 20 ]];
+			wait
+			count=0
+		fi
 	done 
 done 
-wait 
 
 echo 'Done formatting headers.'
 
@@ -89,8 +93,14 @@ echo 'Done concatening headers map.'
 ################################################################################################################################ 
 
 for db in viral bacteria archaea fungi; do
+	count=0
 	for fna in `ls ${base}/${db} | grep "genomic.fna"`; do 
 		python2 ${srcdir}/replace_fna_headers.py ${base}/${db}/${fna} ${base}/headers_map.tsv &
+		count=$((count+1))
+		if [[ $count -eq 10 ]];
+			wait
+			count=0
+		fi
 	done 
 done 
 
