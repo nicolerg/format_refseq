@@ -97,7 +97,7 @@ for db in viral bacteria archaea fungi; do
 	for fna in `ls ${base}/${db} | grep "genomic.fna"`; do 
 		python2 ${srcdir}/replace_fna_headers.py ${base}/${db}/${fna} ${base}/headers_map.tsv &
 		count=$((count+1))
-		if [[ $count -eq 10 ]];
+		if [[ $count -eq 20 ]];
 			wait
 			count=0
 		fi
