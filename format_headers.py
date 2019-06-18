@@ -7,8 +7,6 @@ import sys
 
 gbff = sys.argv[1] # viral.1.genomic.gbff.gz
 
-print gbff
-
 outdir = os.path.dirname(gbff)
 outfile = outdir + '/' + os.path.basename(gbff).replace('gbff.gz','headers_map.tsv')
 
