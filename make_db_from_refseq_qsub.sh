@@ -1,6 +1,6 @@
 #PBS -l walltime=72:00:00
-#PBS -l nodes=2:ppn=10
-#PBS -l mem=5G
+#PBS -l nodes=1:ppn=16
+#PBS -l mem=10G
 #PBS -o log/make_db_from_refseq-o.log
 #PBS -e log/make_db_from_refseq-e.log
 
