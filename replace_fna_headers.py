@@ -15,8 +15,6 @@ import sys
 fna = sys.argv[1] # viral.2.1.genomic.fna.gz
 header_map = sys.argv[2]
 
-print fna
-
 outdir = os.path.dirname(fna)
 outfile = outdir + '/' + os.path.basename(fna).replace('genomic','genomic.formatted') 
 
