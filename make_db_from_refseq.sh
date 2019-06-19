@@ -72,7 +72,7 @@ for db in viral bacteria archaea fungi; do
 	for gbff in `ls ${base}/_${db} | grep "genomic.gbff"`; do 
 		python2 ${srcdir}/format_headers.py ${base}/_${db}/${gbff} & 
 		count=$((count+1))
-		if [[ $count -eq 20 ]];
+		if [[ $count -eq 20 ]]; then 
 			wait
 			count=0
 		fi
