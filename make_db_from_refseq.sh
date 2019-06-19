@@ -92,8 +92,8 @@ echo 'Done concatening headers map.'
 ## use maps to convert headers in FNA files (qsub)
 ################################################################################################################################ 
 
+count=0
 for db in viral bacteria archaea fungi; do
-	count=0
 	for fna in `ls ${base}/${db} | grep "genomic.fna"`; do 
 		python2 ${srcdir}/replace_fna_headers.py ${base}/${db}/${fna} ${base}/headers_map.tsv &
 		count=$((count+1))
