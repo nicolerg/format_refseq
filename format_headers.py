@@ -6,15 +6,7 @@ import os.path
 import sys 
 
 gbff = sys.argv[1] # viral.1.genomic.gbff.gz
-
-outdir = os.path.dirname(gbff)
-outfile = outdir + '/' + os.path.basename(gbff).replace('gbff.gz','headers_map.tsv')
-
-'''
-Author: Nicole Gay nicole.r.gay@gmail.com
-23 May 2019
-Reformat headers in RefSeq databases to include full taxonomy 
-'''
+outfile = gbff.replace('gbff.gz','headers_map.tsv')
 
 '''
 # faa: 
