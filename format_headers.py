@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/bin/python2
 
 import gzip 
 import pandas as pd 
@@ -68,12 +68,15 @@ with gzip.open(gbff,'rb') as refseq, open(outfile, 'wb') as out:
 
 			done=False
 			while not done:
-
+			
 				if l[0] == 'ACCESSION':
 					if len(l) > 2:
 						accn = l[2]
 					else:
 						accn = l[1]
+
+				elif l[0] == 'VERSION':
+					vers = l[1]
 
 				elif l[0] == 'ORGANISM':
 					
@@ -100,11 +103,12 @@ with gzip.open(gbff,'rb') as refseq, open(outfile, 'wb') as out:
 					taxonomy = taxonomy + org 
 
 					header = '>ACCN:{0}|{1}'.format(accn,taxonomy)
-					out.write(header+'\n')
+					out.write(vers+'\t'+header+'\n')
 
 					accn = ''
 					org = ''
 					accn = ''
+					version = ''
 					taxonomy = ''
 					header = ''
 
@@ -114,4 +118,3 @@ with gzip.open(gbff,'rb') as refseq, open(outfile, 'wb') as out:
 				l = line.strip().split()
 
 		line = refseq.readline()
-
