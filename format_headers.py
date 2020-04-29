@@ -1,4 +1,4 @@
-#!/bin/python2
+#!/bin/python3
 
 import gzip 
 import pandas as pd 
@@ -100,7 +100,7 @@ with gzip.open(gbff,'rb') as refseq, open(outfile, 'wb') as out:
 					taxonomy = taxonomy + org 
 
 					header = '>ACCN:{0}|{1}'.format(accn,taxonomy)
-					out.write(vers+'\t'+header+'\n')
+					out.write(header+'\n')
 
 					accn = ''
 					org = ''
