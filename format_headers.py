@@ -9,7 +9,7 @@ gbff = sys.argv[1] # viral.1.genomic.gbff.gz
 outfile = gbff.replace('gbff.gz','headers_map.tsv')
 
 '''
-# faa: 
+# fa: 
 
 >NC_001798.2 Human herpesvirus 2 strain HG52, complete genome
 
