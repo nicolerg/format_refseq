@@ -1,4 +1,6 @@
-## Download RefSeq files (i.e. entire microbial database)
+# Make RefSeq database of microbial genomes 
+
+## 1. Download RefSeq files (i.e. entire microbial database)
 ```bash
 base=/oak/stanford/groups/smontgom/nicolerg/REFSEQ
 for db in viral bacteria archaea fungi; do 
@@ -28,22 +30,22 @@ for db in viral bacteria archaea fungi; do
 	done < file_list
 
 	rm ${base}/${db}/tmp
-	#rm ${base}/_${db}/file_list
-	#rm ${base}/${db}/file_list
 
 done 
 ```
 
-## 1. Download snakemake 
-### 1a. Install miniconda (Python 3)
+## 2. Make list of input files 
+
+## 2. Download snakemake 
+### 2a. Install miniconda (Python 3)
 Install the Python 3 version of Miniconda: https://docs.conda.io/en/latest/miniconda.html.  
 Answer "yes" to the question whether conda shall be put into your `PATH`.
-### 1b. Install snakemake 
+### 2b. Install snakemake 
 ```{bash}
 conda install -c bioconda -c conda-forge snakemake
 ```
 
-## 2. 
+## 3. 
 ```{bash}
 conda activate snakemake
 ```
