@@ -6,8 +6,14 @@ import os.path
 import sys 
 import logging
 
-logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', 
-	datefmt='%Y-%m-%d %H:%M:%S')
+root = logging.getLogger()
+root.setLevel(logging.INFO)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+root.addHandler(handler)
 
 gbff = sys.argv[1] # viral.1.genomic.gbff.gz
 outfile = sys.argv[2]

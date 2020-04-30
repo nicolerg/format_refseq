@@ -1,8 +1,8 @@
 import os
 import subprocess
 
-srcdir = '/oak/stanford/groups/smontgom/nicolerg/REFSEQ/format_refseq'
-base = '/oak/stanford/groups/smontgom/nicolerg/REFSEQ/TEST'
+srcdir = '/oak/stanford/groups/smontgom/nicolerg/src/format_refseq'
+base = '/oak/stanford/groups/smontgom/nicolerg/REFSEQ'
 os.chdir(base)
 
 SAMPLES = subprocess.check_output('ls gbff/*.gz | sed "s/\.genomic.*//" | sed "s/^gbff\///"', shell=True).decode().strip().split()
@@ -54,7 +54,7 @@ rule merge_fna:
     input: 
         expand('concat_fna/{sample}.1.genomic.concat.fna.gz', sample = SAMPLES)
     output:
-        'concat_fna/microbe_temp.fna.gz'
+        temp('concat_fna/microbe_temp.fna.gz')
     shell:
         "cat {input} >> {output}"
 
@@ -64,9 +64,9 @@ rule split_fna:
         fna = 'concat_fna/microbe_temp.fna.gz',
         script = srcdir + '/split_file.py'
     output: 
-        'control/run_concat_all_lengths'
+        temp('run_concat_all_lengths')
     params:
-        max_size = 100*10**6 # 10MB per chunk
+        max_size = 10**20 # 10MB per chunk
     shell:
         '''
         mkdir FINAL
@@ -78,7 +78,7 @@ rule split_fna:
 rule concat_all_lengths:
     input:
         all_lengths = expand('all_lengths/{sample}.all_lengths.tsv',sample = SAMPLES),
-        controlflow = 'control/run_concat_all_lengths'
+        controlflow = 'run_concat_all_lengths'
     output:
         'FINAL/all_lengths.txt'
     shell:
