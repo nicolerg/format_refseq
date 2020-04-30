@@ -4,12 +4,16 @@ import gzip
 import pandas as pd 
 import os.path 
 import sys 
+import logging
+
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', 
+	datefmt='%Y-%m-%d %H:%M:%S')
 
 gbff = sys.argv[1] # viral.1.genomic.gbff.gz
-outfile = gbff.replace('gbff.gz','headers_map.tsv')
+outfile = sys.argv[2]
 
 '''
-# fa: 
+# fna: 
 
 >NC_001798.2 Human herpesvirus 2 strain HG52, complete genome
 
@@ -44,7 +48,7 @@ def read_nonempty(file_handle):
 		l = line.strip().split()
 	return line 
 
-with gzip.open(gbff,'rb') as refseq, open(outfile, 'wb') as out:
+with gzip.open(gbff,'rt') as refseq, open(outfile, 'w') as out:
 
 	line = refseq.readline()
 
@@ -101,6 +105,8 @@ with gzip.open(gbff,'rb') as refseq, open(outfile, 'wb') as out:
 					
 					taxonomy = taxonomy.replace('.',';')
 					taxonomy = taxonomy + org 
+
+					logging.info(org)
 
 					header = '>ACCN:{0}|{1}'.format(accn,taxonomy)
 					out.write(vers+'\t'+header+'\n')
