@@ -130,3 +130,5 @@ with gzip.open(gbff,'rt') as refseq, open(outfile, 'w') as out:
 				l = line.strip().split()
 
 		line = refseq.readline()
+
+logging.info('Done making headers')

@@ -92,10 +92,10 @@ logging.info('Writing out results')
 mysep = 'N'*100
 with open(all_lengths, 'w') as all_out, gzip.open(out_fna, 'wb') as fna:
 	for header, seq_list in header_to_sequence.items():
-		logging.info(header)
 		sequence = mysep.join(seq_list)
 		genome_length = len(sequence.replace('N',''))
 		if genome_length == 0:
 			continue
 		all_out.write(header+'\t'+str(genome_length)+'\n')
 		fna.write(('{}@{}\n').format(header, sequence).encode())
+logging.info('Done')

@@ -63,7 +63,6 @@ If you do not already have `miniconda/3` installed, follow instructions [here](h
 ```bash
 conda install -c conda-forge -c bioconda snakemake
 ```
-Use `conda activate snakemake` before trying to use Snakemake. 
 
 ## 3. Run the pipeline 
 This could be streamlined, but it does the job.  
@@ -72,7 +71,6 @@ Edit `Snakefile` for `srcdir` to point to this cloned repository and `base` to p
 
 Start an interactive session with as many cores as you'd like (1 GB per core should be sufficient). Move to `srcdir` and run the pipeline, where `NUM_CORES` is the number of cores you requested:
 ```bash
-conda activate snakemake
 snakemake -j NUM_CORES
 ```
 

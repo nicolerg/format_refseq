@@ -1,86 +1,71 @@
 #!/bin/python3
 
 import sys 
-import logging
 import gzip 
 import os
 
-logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', 
-	datefmt='%Y-%m-%d %H:%M:%S')
+# merge species that were in different fna files
 
 infile = sys.argv[1]
-max_size = int(sys.argv[2])
+allpairs = sys.argv[2]
 
-prefix = os.path.dirname(infile).replace('concat_fna','FINAL') + '/microbe'
+hdict = {}
 
-current_size = 0
-line_list = []
-counter = 0
+# make map from allpairs
+with open(allpairs, 'r') as headers:
+	next(headers)
+	for line in headers:
+		l = line.strip().split()
+		original = l[0]
+		hdict[original] = {}
+		hdict[original]['new_header'] = l[1]
+		hdict[original]['duplicated'] = int(l[3])
 
-with gzip.open(infile, 'rt') as merged:
-	for line in merged:
-		line_size = int(len(line))
-		new_size = current_size + line_size
-		if new_size > max_size:
-			if len(line_list) > 0:
-				# write out lines without new line 
-				logging.info(counter)
-				outfile = prefix + '.' + str(counter) + '.fa.gz'
-				with gzip.open(outfile, 'wt') as chunk:
-					for jine in line_list:
-						# split on '@'
-						j = jine.strip().split('@')
-						# write header as-as
-						chunk.write(j[0] + '\n')
-						# write other lines in length 60 
-						sequence = j[1]
-						n = 60
-						splits = [sequence[i:i+n] for i in range(0, len(sequence), n)]
-						chunk.write('\n'.join(splits)+'\n')
-				# reset counters 
-				line_list = []
-				counter += 1 
-				print('{} {}MB'.format(counter, int(current_size/(10**6))))
-				# add line to list 
-				line_list.append(line)
-				current_size = line_size
+# iterate through concat db
+prefix = os.path.dirname(infile).replace('concat_fna','merged_fna') + '/'
+with gzip.open(infile, 'rt') as db:
+	for line in db:
+		l = line.strip().split('@')
+		
+		old_header = l[0]
+		new_header = hdict[old_header]['new_header']
+		dup = hdict[old_header]['duplicated']
+
+		sequence = l[1]
+		w = 60 # width of .fna file 
+		N = 100 # number of N's between contigs
+
+		if dup == 1:
+			# append to a species-specific file 
+			accn = new_header.split('|')[0].split(':')[1]
+			outfile = prefix + accn + '.merged.fna.gz'
+			if os.path.exists(outfile):
+				# find out how many characters are on the last line 
+				with gzip.open(outfile, 'rt') as file:
+					for last_line in file:
+						pass
+				last_line = last_line.strip()
+				line_len = len(last_line)
+				N_to_add = w - line_len
+				N_remaining = N - N_to_add
+				sequence = 'N'*N_remaining + sequence
+				splits = [sequence[i:i+w] for i in range(0, len(sequence), w)]
+				with gzip.open(outfile, 'at') as file:
+					# don't write header
+					file.write('N'*N_to_add+'\n')
+					file.write('\n'.join(splits)) # don't add line break
 			else:
-				# no other lines
-				current_size = line_size
-				# write this out
-				logging.info(counter)
-				outfile = prefix + '.' + str(counter) + '.fa.gz'
-				with gzip.open(outfile, 'wt') as chunk:
-					# split on '@'
-					j = line.strip().split('@')
-					# write header as-as
-					chunk.write(j[0] + '\n')
-					# write other lines in length 60 
-					sequence = j[1]
-					n = 60
-					splits = [sequence[i:i+n] for i in range(0, len(sequence), n)]
+				# write normal 
+				splits = [sequence[i:i+w] for i in range(0, len(sequence), w)]
+				with gzip.open(outfile, 'at') as chunk:
+					# new header
+					chunk.write(new_header + '\n')
 					chunk.write('\n'.join(splits)+'\n')
-				# reset counters 
-				print('{} {}MB'.format(counter, int(current_size/(10**6))))
-				line_list = []
-				counter += 1 
-				current_size = 0
 		else:
-			# save line and update size 
-			current_size = new_size
-			line_list.append(line)
-
-# print remaining lines 
-if len(line_list) > 0:
-	with gzip.open(outfile, 'wt') as chunk:
-		for jine in line_list:
-			# split on '@'
-			j = jine.strip().split('@')
-			# write header as-as
-			chunk.write(j[0] + '\n')
-			# write other lines in length 60 
-			sequence = j[1]
-			n = 60
-			splits = [sequence[i:i+n] for i in range(0, len(sequence), n)]
-			chunk.write('\n'.join(splits)+'\n')
-
+			# append to the large file with non-duplicated genomes 
+			splits = [sequence[i:i+w] for i in range(0, len(sequence), w)]
+			outfile = prefix + 'single_genome.concat.fna.gz'
+			with gzip.open(outfile, 'at') as chunk:
+				# new_header
+				chunk.write(new_header + '\n')
+				chunk.write('\n'.join(splits)+'\n')
