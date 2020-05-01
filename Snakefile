@@ -2,95 +2,67 @@ import os
 import subprocess
 
 srcdir = '/oak/stanford/groups/smontgom/nicolerg/src/format_refseq'
-base = '/oak/stanford/groups/smontgom/nicolerg/REFSEQ/TEST'
+base = '/oak/stanford/groups/smontgom/nicolerg/REFSEQ'
 os.chdir(base)
 
 SAMPLES = subprocess.check_output('ls gbff/*.gz | sed "s/\.genomic.*//" | sed "s/^gbff\///"', shell=True).decode().strip().split()
-# ['archaea.1', 'bacteria.1', 'fungi.1', 'viral.1']
+#CHUNKS = subprocess.check_output('ls gbff/bacteria* | sed "s/.*bacteria\.//" | sed "s/\.genomic.*//"', shell=True).decode().strip().split()
 
 rule all:
     input:
-        'done.txt'
+        expand('log/split_fna/{sample}.done', sample = SAMPLES)
+
+# rule format_headers:
+#     input:
+#         file = 'gbff/{sample}.genomic.gbff.gz',
+#         script = srcdir + '/format_headers.py'
+#     output:
+#         'headers/all/{sample}.genomic.headers_map.tsv'
+#     log:
+#         'log/format_headers/{sample}.log'
+#     shell:
+#         'python {input.script} {input.file} {output} > {log} 2>&1'
 
 
-rule format_headers:
-    input:
-        file = 'gbff/{sample}.genomic.gbff.gz',
-        script = srcdir + '/format_headers.py'
-    output:
-        'headers/all/{sample}.genomic.headers_map.tsv'
-    log:
-        'log/{sample}.format_headers.log'
-    shell:
-        'python {input.script} {input.file} {output} > {log} 2>&1'
+# rule reduce_headers:
+#     input:
+#         file = 'headers/all/{sample}.genomic.headers_map.tsv',
+#         script = srcdir + '/reduce_headers.py'
+#     output:
+#         'headers/reduced/{sample}.genomic.headers_map.reduced.tsv'
+#     shell:
+#         'python {input.script} {input.file} {output}'
 
 
-rule reduce_headers:
-    input:
-        file = 'headers/all/{sample}.genomic.headers_map.tsv',
-        script = srcdir + '/reduce_headers.py'
-    output:
-        'headers/reduced/{sample}.genomic.headers_map.reduced.tsv'
-    shell:
-        'python {input.script} {input.file} {output}'
+# rule curate_headers:
+#     input:
+#         file = expand('headers/reduced/{sample}.genomic.headers_map.reduced.tsv', sample = SAMPLES),
+#         script = srcdir + '/fix_all_headers.R'
+#     output:
+#         merged = 'headers/all_reduced_headers.txt',
+#         curated = 'curated_all_headers.txt',
+#         header_map = protected('version_to_header.txt')
+#     params:
+#         wd = base 
+#     shell:
+#         '''
+#         cat {input.file} > {output.merged} # already unique because of versions
+#         Rscript {input.script} {output.merged} {output.curated} {params.wd}
+#         sed -e '1d' {output.curated} | cut -f 2,3 > {output.header_map}
+#         '''
 
-
-rule format_fna:
-    input:
-        header_map = 'headers/reduced/{sample}.genomic.headers_map.reduced.tsv',
+rule split_fna:
+    input: 
         fna = 'fna/{sample}.1.genomic.fna.gz',
-        script = srcdir + '/format_fna.py'
-    output:
-        new_fna = temp('concat_fna/{sample}.1.genomic.concat.fna.gz'),
-        all_lengths = 'all_lengths/{sample}.all_lengths.tsv'
+        header_map = 'version_to_header.txt',
+        script = srcdir + '/split_species.py'
     log:
-        'log/{sample}.format_fna.log'
-    shell:
-        'python {input.script} {input.fna} {input.header_map} {output.new_fna} {output.all_lengths} > {log} 2>&1'
-
-
-rule merge_fna:
-    input: 
-        expand('concat_fna/{sample}.1.genomic.concat.fna.gz', sample = SAMPLES)
+        'log/split_fna/{sample}.log'
     output:
-        'concat_fna/microbe_temp.fna.gz'
-    shell:
-        "cat {input} >> {output}"
-
-
-rule concat_all_lengths:
-    input:
-        all_lengths = expand('all_lengths/{sample}.all_lengths.tsv',sample = SAMPLES)
-    output:
-        'all_lengths.txt'
-    shell:
-        'cat {input.all_lengths} >> {output}'
-
-
-rule curate_all_lengths:
-    input:
-        file = 'all_lengths.txt',
-        script = srcdir + '/fix_all_lengths.R'
-    output:
-        'curated_all_lengths.txt'
-    params:
-        wd = base
-    shell:
-        'Rscript {input.script} {input.file} {params.wd}'
-
-
-rule curate_fna:
-    input: 
-        fna = 'concat_fna/microbe_temp.fna.gz',
-        curated = 'curated_all_lengths.txt',
-        script = srcdir + '/split_file.py'
-    output: 
-        file = 'merged_fna/single_genome.concat.fna.gz',
-        controlflow = temp('done.txt')
+        controlflow = temp('log/split_fna/{sample}.done')
     shell:
         '''
-        mkdir -p merged_fna
-        python {input.script} {input.fna} {input.curated}
-        touch {output.controlflow}
+        mkdir -p /tmp/refseq
+        python {input.script} {input.fna} {input.header_map}  > {log} 2>&1
+        touch {output}
         '''
-
