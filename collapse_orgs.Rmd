@@ -1,0 +1,409 @@
+---
+title: "RefSeq DB"
+author: "Nicole Gay"
+date: "4/30/2020"
+output: html_document
+params:
+  indir: '/oak/stanford/groups/smontgom/nicolerg/REFSEQ/headers'
+---
+
+```{r setup, include=FALSE}
+INDIR = params$indir
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = INDIR)
+library(data.table)
+library(ggplot2)
+```
+
+```{r fix weird tax}
+if(!file.exists('all_lengths.tmp.RData')){
+  
+  all_lengths = fread('all_genomic.headers_map.txt', sep='\t', header=F)
+  colnames(all_lengths) = c('version','header')
+  all_lengths = all_lengths[,.(header)]
+  all_lengths = unique(all_lengths)
+  
+  all_lengths[, kingdom := sapply(header, function(x) unname(unlist(strsplit(gsub('.*\\|','',x), ';')))[1])]
+  broken = all_lengths[!kingdom %in% c('Bacteria','Eukaryota','Viruses','Archaea')]
+  correct = all_lengths[kingdom %in% c('Bacteria','Eukaryota','Viruses','Archaea')]
+  
+  fix_header = function(x){
+    accn = unname(unlist(strsplit(x,'\\|')))[1]
+    tax = unname(unlist(strsplit(x,'\\|')))[2]
+    if(grepl('Bacteria;',tax)){
+      tax = gsub('.*Bacteria;','Bacteria;',tax)
+    }else if(grepl('Viruses;',tax)){
+      tax = gsub('.*Viruses;','Viruses;',tax)
+    }else if(grepl('bacteri|Salmonella|Staphylococcus|Lactobacillus|Francisella|Bacteroides|Leptospira|Klebsiella|Neorhizobium',x)){
+      tax = paste0('Bacteria;',tax)
+    }
+    new = sprintf('%s|%s',accn,tax)
+    return(new)
+  }
+  
+  if(nrow(broken) > 0){
+  
+    broken[,new_header := sapply(header, fix_header)]
+    broken[,kingdom := sapply(new_header, function(x) unname(unlist(strsplit(gsub('.*\\|','',x), ';')))[1])]
+    print(table(broken[,kingdom]))
+  
+    correct[,new_header := NA]
+    all_lengths = rbindlist(list(correct, broken), fill=T)
+    all_lengths[!is.na(new_header), header := new_header]
+    all_lengths[,new_header := NULL]
+  }else{
+    all_lengths = correct
+  }
+  
+  # get species
+  all_lengths[, species := sapply(header, function(x) tail(unname(unlist(strsplit(x,';'))),1))]
+  save(all_lengths, file='all_lengths.tmp.RData')
+}else{
+  load('all_lengths.tmp.RData')
+}
+nrow(all_lengths)
+spec = all_lengths
+```
+
+```{r check semicolon}
+spec[, num_levels := sapply(header, function(x) length(unname(unlist(strsplit(x,';')))))]
+table(spec[,kingdom], spec[,num_levels])
+#unique(gsub('.*\\|','',spec[kingdom!='Eukaryota' & num_levels > 10, header]))
+#unique(gsub('.*\\|','',spec[num_levels > 12, header]))
+```
+
+```{r standardize species}
+nrow(spec)
+length(unique(spec[,species]))
+spec[,original_species := species]
+uniq_orig = unique(spec[,original_species])
+
+KEEP = list()
+i = 1
+
+# fix a few things:
+spec[species == 'Fusarium_oxysporum_f._sp._dianthi_mycovirus_1', species := 'Fusarium_oxysporum_chrysovirus_2' ]
+
+# leave these alone:
+letbe = c('bacterium_enrichment_culture',
+          'sp\\._\\(',
+          'uncultured_bacterium')
+
+for (c in letbe){
+  sub = spec[grepl(c, header)]
+  KEEP[[i]] = sub
+  i=i+1
+  spec = spec[!grepl(c, header)]
+}
+length(unique(spec[,species]))
+
+# remove everything after...
+spec[, species := gsub('_subsp\\..*', '', species)]
+spec[, species := gsub('_bv\\..*', '', species)]
+spec[, species := gsub('_pv\\..*','',species)]
+spec[, species := gsub('_serovar.*','',species)]
+spec[, species := gsub('_serotype.*','',species)]
+spec[, species := gsub('_substr\\..*','',species)]
+spec[, species := gsub('_EnGen[0-9].*','',species)]
+spec[, species := gsub('_Hp_.*','',species)]
+spec[, species := gsub('_PanR.*','',species)]
+spec[, species := gsub('_var\\..*','',species)]
+spec[, species := gsub('_f\\..*','',species)]
+spec[, species := gsub('_str\\..*','',species)]
+spec[, species := gsub('_phytoplasma.*','_phytoplasma',species)]
+
+# collapse sp., isolate, strain, Candidatus
+spec[, species := gsub('_strain_','_strain',species)]
+spec[, species := gsub('_isolate_','_isolate',species)]
+spec[, species := gsub('_sp\\._','_sp\\.',species)]
+spec[, species := gsub('Candidatus_','Candidatus',species)]
+
+# remove special characters
+spec[, species := gsub("'", '', species)]
+spec[, species := gsub('_=_', '=', species)]
+spec[, species := gsub('_-_', '-', species)]
+spec[, species := gsub('\\[', '', species)]
+spec[, species := gsub('\\]', '', species)]
+# remove ':[A-Z0-9]+' at end of the line 
+spec[, species := gsub(':[A-Z0-9-]+$', '', species)]
+spec[, species := gsub(':[A-Z0-9-]+$', '', species)]
+spec[, species := gsub(':$', '', species)]
+# remove trailing characters 
+spec[, species := gsub('-$', '', species)]
+spec[, species := gsub('_$', '', species)]
+
+# get first two words
+spec[, first_two_words := sapply(species, function(x) paste(unname(unlist(strsplit(x,'_')))[1:2], collapse='_'))]
+SPEC = spec # save for later
+length(unique(spec[,species]))
+```
+
+```{r first cap}
+cap_first = function(x){
+  first_letter = unname(unlist(strsplit(x, '')))[1]
+  if(first_letter == toupper(first_letter)){
+    return(1)
+  }
+  return(0)
+}
+spec[,cap_first := sapply(species, cap_first)]
+table(spec[,cap_first])
+#gsub('.*;','',spec[cap_first == 0, header])
+
+# leave it alone if it starts with a lowercase letter
+KEEP[[i]] = spec[cap_first == 0]
+i = i+1
+spec = spec[cap_first == 1]
+length(unique(spec[,species]))
+```
+
+```{r narrow down to orgs with more than 2 words}
+# how many words are there in the species substring now?
+spec[, species_word_count := sapply(species, function(x) length(unname(unlist(strsplit(x, '_')))))]
+table(spec[,species_word_count], spec[,kingdom])
+spec[species_word_count == 1, header]
+
+KEEP[[i]] = spec[species_word_count <= 2]
+i = i+1
+spec = spec[species_word_count > 2]
+length(unique(spec[,species]))
+```
+```{r viruses}
+# a lot of these are viruses, which are going to have weird taxonomies. accept them as they are 
+
+# very few viruses are collapsible. don't bother trying 
+# # 'African_swine_fever_virus'
+# viruses = spec[kingdom == 'Viruses']
+# all = unique(viruses[,species])
+# substrings = c()
+# for (v in all){
+#   comp = all[all != v]
+#   if(any(grepl(paste0(v,'_'), comp, fixed=T))){
+#     substrings = c(substrings, v)
+#   }
+# }
+# length(substrings)
+# check_virus = function(x){
+#   for(v in substrings){
+#     if (v == x){
+#       next 
+#     }
+#     if(grepl(paste0(v,'_'), x, fixed=T)){
+#       return(v)
+#     }
+#   }
+#   return(NA)
+# }
+# viruses[, seen := sapply(species, check_virus)]
+# s = unique(viruses[!is.na(seen), species])
+# s[order(s)]
+
+KEEP[[i]] = spec[kingdom == 'Viruses'] 
+i = i+1
+spec = spec[kingdom != 'Viruses'] 
+length(unique(spec[,species]))
+```
+
+```{r keep if first two words look like a species}
+
+table(spec[,first_two_words] %in% uniq_orig)
+
+t = data.table(table(spec[first_two_words %in% uniq_orig,first_two_words]))
+t = t[order(N, decreasing = T)]
+nrow(t)
+head(t, 50)
+tail(t, 50)
+t[grepl("\\.|\\(", V1)]
+
+sub = spec[first_two_words %in% uniq_orig]
+sub[, species := first_two_words]
+
+KEEP[[i]] = sub
+i = i+1
+spec = spec[!first_two_words %in% uniq_orig]
+length(unique(spec[,species]))
+```
+
+```{r isolate unique orgs}
+# if the first two words are unique, then it's likely not collapsible 
+all = SPEC[,first_two_words]
+t = data.table(table(all))
+t = t[N==1]
+singular = t[,all]
+length(singular)
+a = spec[first_two_words %in% singular, species]
+a = a[order(a)]
+length(a)
+#a[1:100]
+sprintf("The first two words in the last taxonomy substring are unique for %s out of %s cases. Assume these can't be further collapsed.", length(a), length(unique(spec[,first_two_words])))
+
+KEEP[[i]] = spec[first_two_words %in% singular]
+i = i+1
+spec = spec[!first_two_words %in% singular]
+length(unique(spec[,species]))
+```
+
+```{r leave sp alone}
+head(gsub('.*;','',unique(spec[grepl('sp\\.',species), species])))
+# leave them alone
+KEEP[[i]] = spec[grepl('sp\\.',species)]
+i = i+1
+spec = spec[!grepl('sp\\.',species)]
+length(unique(spec[,species]))
+```
+
+```{r leave bacterium alone}
+bacterium = spec[grepl('_bacterium_', species)]
+nrow(bacterium)
+#bacterium[order(species), species][1:100]
+
+KEEP[[i]] = bacterium
+i = i+1
+spec = spec[!grepl('_bacterium_',species)]
+length(unique(spec[,species]))
+```
+
+```{r end has weird characters}
+#spec[order(species),species][1:100]
+
+# collapse, checking end of string 
+# get everything after first two words 
+spec[, end := sapply(species, function(x) paste(tail(unname(unlist(strsplit(x,'_'))),-2), collapse='_')) ]
+spec[, end := gsub('[A-Z0-9]+','',end)]
+spec[, end := gsub('-|_|\\*|\\.|\\/|:|#|\\(|\\)|,|=|\\+','',end)]
+
+# clean up ones with end != '' 
+sub = spec[end != '']
+#unique(sub[grepl('\\(',species), species])
+foo = function(x){
+  if(grepl('\\(', x)){
+    x1 = gsub('\\(.*','',x)
+    if(grepl('\\)',x)){
+      x2 = gsub('.*\\)','',x)
+    }else{
+      x2=''
+    }
+  }else{
+    x1=x
+    x2=''
+  }
+  x = paste0(x1,x2)
+  x = gsub('_$','',x)
+  return(x)
+}
+sub[, species := sapply(species, foo)]
+sub[, species := gsub('__','_',species)]
+
+# numbers 
+sub1 = sub[grepl('[0-9]',species)]
+# no numbers
+sub2 = sub[!grepl('[0-9]',species)]
+#unique(sub2[order(species),species])
+
+# sub2:
+# remove after 
+sub2[, species := gsub('Wolbachia_endosymbiont_of_Drosophila_simulans.*','Wolbachia_endosymbiont_of_Drosophila_simulans',species)]
+sub2[, species := gsub('Wolbachia_endosymbiont_of_Culex_quinquefasciatus.*','Wolbachia_endosymbiont_of_Culex_quinquefasciatus',species)]
+sub2[, species := gsub('CandidatusPortiera_aleyrodidarum.*','CandidatusPortiera_aleyrodidarum',species)]
+sub2[, species := gsub('CandidatusHamiltonella_defensa.*','CandidatusHamiltonella_defensa',species)]
+#unique(sub2[order(species),species])
+
+KEEP[[i]] = sub2
+i = i+1
+
+# sub1:
+#unique(sub1[order(species),species])
+KEEP[[i]] = sub1[grepl('endosymbiont|clade|et_al|\\.|_and_', species)]
+i = i+1
+sub1 = sub1[!grepl('endosymbiont|clade|et_al|\\.|_and_', species)]
+#unique(sub1[order(species),species])
+sub1[, species := first_two_words]
+KEEP[[i]] = sub1
+i = i+1
+
+spec = spec[end == '']
+```
+
+```{r end is AZ09}
+# only collapse if first_two_words are seen somewhere 
+# duplicated within spec?
+r = unique(spec[,species])
+first_two = sapply(r, function(x) paste(unname(unlist(strsplit(x,'_')))[1:2], collapse='_'))
+t = data.table(table(first_two))
+t = t[N>1]
+nrow(t)
+head(t)
+t[grepl('-',first_two)]
+sub = spec[first_two_words %in% t[,first_two]]
+sub[, species := first_two_words]
+
+KEEP[[i]] = sub 
+i=i+1
+spec = spec[!first_two_words %in% t[,first_two]]
+length(unique(spec[,species]))
+
+# in keep[, first_two_words]?
+tmp = rbindlist(KEEP, fill=T)
+seen = unique(tmp[,species])
+table(spec[,first_two_words] %in% seen)
+
+sub = spec[first_two_words %in% seen]
+sub[,species := first_two_words]
+#unique(sub[,species])
+
+KEEP[[i]] = sub 
+i = i+1
+spec = spec[!first_two_words %in% seen]
+length(unique(spec[,species]))
+
+# these have and end entirely made of [A-Z0-9]
+#unique(spec[,species])
+
+# doesn't matter if I truncate them or not because the first two words are already unique
+spec[!grepl('taxon', species), species := first_two_words]
+KEEP[[i]] = spec
+```
+
+```{r merge}
+master = rbindlist(KEEP, fill=T)
+stopifnot(nrow(all_lengths) == nrow(master))
+colnames(master)
+master = master[,.(kingdom, species, original_species, header)]
+
+# fix a few things 
+master[species == 'Agrobacterium_radiobacter', species := 'Agrobacterium_tumefaciens']
+master[species == 'Clostridium_clostridioforme', species := 'Enterocloster_clostridioformis']
+master[species == 'Clostridium_citroniae', species := 'Enterocloster_citroniae']
+master[species ==  'Clostridium_bolteae', species := 'Enterocloster_bolteae']
+master[species == 'Cryptococcus_gattii', species := 'Cryptococcus_gattii_VGI']
+
+master[, count := 1]
+master[, accession := sapply(header, function(x) gsub('>ACCN:', '', unname(unlist(strsplit(x, '\\|')))[1]))]
+master[, beginning_of_header := sapply(header, function(x) paste(head(unname(unlist(strsplit(x, ';'))),-1), collapse=';'))]
+
+write.table(master, 'original_taxonomy.txt', sep='\t', col.names=T, row.names=F, quote=F)
+
+collapsed = master[,list(kingdom = unique(kingdom),
+                         number_collapsed = sum(count),
+                         begin_header = beginning_of_header[1],
+                         accessions = paste(accession, collapse=';')),
+                   by=species]
+nrow(collapsed)
+collapsed[order(number_collapsed, decreasing = T),.(species, number_collapsed)][1:50]
+stopifnot(nrow(collapsed[duplicated(species)])==0)
+
+# fix header 
+collapsed[,new_header := paste0(begin_header, ';', species)]
+# merge back with accession 
+master = master[,.(accession, original_species, species)]
+m = merge(master, collapsed[,.(species, new_header)], by='species')
+stopifnot(nrow(m)==nrow(all_lengths))
+
+head(m)
+write.table(m[,.(accession, new_header)], 'accession_to_header_map.txt', sep='\t', col.names=F, row.names=F, quote=F)
+
+sub = collapsed[,.(species, number_collapsed, new_header)]
+sub = sub[order(species)]
+head(sub)
+write.table(sub, 'n_collapsed_accession_per_header.txt', sep='\t', col.names=T, row.names=F, quote=F)
+```
