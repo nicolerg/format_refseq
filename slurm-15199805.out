@@ -1,461 +1,0 @@
-Building DAG of jobs...
-Using shell: /usr/bin/bash
-Provided cores: 12
-Rules claiming more threads will be scaled down.
-Job counts:
-	count	jobs
-	1	all
-	1	collapse_species
-	13	format_headers
-	1	merge_headers
-	1	merge_species
-	13	split_fna
-	30
-
-[Tue May  5 11:55:29 2020]
-rule format_headers:
-    input: gbff/bacteria.7.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/bacteria.7.genomic.headers_map.tsv
-    log: log/format_headers/bacteria.7.log
-    jobid: 24
-    wildcards: sample=bacteria.7
-
-
-[Tue May  5 11:55:29 2020]
-rule format_headers:
-    input: gbff/viral.2.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/viral.2.genomic.headers_map.tsv
-    log: log/format_headers/viral.2.log
-    jobid: 29
-    wildcards: sample=viral.2
-
-
-[Tue May  5 11:55:29 2020]
-rule format_headers:
-    input: gbff/bacteria.8.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/bacteria.8.genomic.headers_map.tsv
-    log: log/format_headers/bacteria.8.log
-    jobid: 25
-    wildcards: sample=bacteria.8
-
-
-[Tue May  5 11:55:29 2020]
-rule format_headers:
-    input: gbff/bacteria.4.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/bacteria.4.genomic.headers_map.tsv
-    log: log/format_headers/bacteria.4.log
-    jobid: 21
-    wildcards: sample=bacteria.4
-
-
-[Tue May  5 11:55:29 2020]
-rule format_headers:
-    input: gbff/fungi.1.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/fungi.1.genomic.headers_map.tsv
-    log: log/format_headers/fungi.1.log
-    jobid: 27
-    wildcards: sample=fungi.1
-
-
-[Tue May  5 11:55:29 2020]
-rule format_headers:
-    input: gbff/bacteria.9.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/bacteria.9.genomic.headers_map.tsv
-    log: log/format_headers/bacteria.9.log
-    jobid: 26
-    wildcards: sample=bacteria.9
-
-
-[Tue May  5 11:55:30 2020]
-rule format_headers:
-    input: gbff/bacteria.3.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/bacteria.3.genomic.headers_map.tsv
-    log: log/format_headers/bacteria.3.log
-    jobid: 20
-    wildcards: sample=bacteria.3
-
-
-[Tue May  5 11:55:30 2020]
-rule format_headers:
-    input: gbff/bacteria.5.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/bacteria.5.genomic.headers_map.tsv
-    log: log/format_headers/bacteria.5.log
-    jobid: 22
-    wildcards: sample=bacteria.5
-
-
-[Tue May  5 11:55:30 2020]
-rule format_headers:
-    input: gbff/bacteria.6.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/bacteria.6.genomic.headers_map.tsv
-    log: log/format_headers/bacteria.6.log
-    jobid: 23
-    wildcards: sample=bacteria.6
-
-
-[Tue May  5 11:55:30 2020]
-rule format_headers:
-    input: gbff/bacteria.1.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/bacteria.1.genomic.headers_map.tsv
-    log: log/format_headers/bacteria.1.log
-    jobid: 18
-    wildcards: sample=bacteria.1
-
-
-[Tue May  5 11:55:30 2020]
-rule format_headers:
-    input: gbff/bacteria.10.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/bacteria.10.genomic.headers_map.tsv
-    log: log/format_headers/bacteria.10.log
-    jobid: 17
-    wildcards: sample=bacteria.10
-
-
-[Tue May  5 11:55:30 2020]
-rule format_headers:
-    input: gbff/bacteria.2.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/bacteria.2.genomic.headers_map.tsv
-    log: log/format_headers/bacteria.2.log
-    jobid: 19
-    wildcards: sample=bacteria.2
-
-[Tue May  5 11:55:39 2020]
-Finished job 29.
-1 of 30 steps (3%) done
-
-[Tue May  5 11:55:39 2020]
-rule format_headers:
-    input: gbff/viral.1.genomic.gbff.gz, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/format_headers.py
-    output: headers/viral.1.genomic.headers_map.tsv
-    log: log/format_headers/viral.1.log
-    jobid: 28
-    wildcards: sample=viral.1
-
-[Tue May  5 11:55:41 2020]
-Finished job 28.
-2 of 30 steps (7%) done
-[Tue May  5 11:55:45 2020]
-Finished job 27.
-3 of 30 steps (10%) done
-[Tue May  5 11:55:57 2020]
-Finished job 24.
-4 of 30 steps (13%) done
-[Tue May  5 11:56:04 2020]
-Finished job 20.
-5 of 30 steps (17%) done
-[Tue May  5 11:56:05 2020]
-Finished job 26.
-6 of 30 steps (20%) done
-[Tue May  5 11:56:05 2020]
-Finished job 18.
-7 of 30 steps (23%) done
-[Tue May  5 11:56:07 2020]
-Finished job 17.
-8 of 30 steps (27%) done
-[Tue May  5 11:56:07 2020]
-Finished job 21.
-9 of 30 steps (30%) done
-[Tue May  5 11:56:10 2020]
-Finished job 25.
-10 of 30 steps (33%) done
-[Tue May  5 11:56:10 2020]
-Finished job 23.
-11 of 30 steps (37%) done
-[Tue May  5 11:56:11 2020]
-Finished job 22.
-12 of 30 steps (40%) done
-[Tue May  5 11:56:11 2020]
-Finished job 19.
-13 of 30 steps (43%) done
-
-[Tue May  5 11:56:11 2020]
-rule merge_headers:
-    input: headers/bacteria.10.genomic.headers_map.tsv, headers/bacteria.1.genomic.headers_map.tsv, headers/bacteria.2.genomic.headers_map.tsv, headers/bacteria.3.genomic.headers_map.tsv, headers/bacteria.4.genomic.headers_map.tsv, headers/bacteria.5.genomic.headers_map.tsv, headers/bacteria.6.genomic.headers_map.tsv, headers/bacteria.7.genomic.headers_map.tsv, headers/bacteria.8.genomic.headers_map.tsv, headers/bacteria.9.genomic.headers_map.tsv, headers/fungi.1.genomic.headers_map.tsv, headers/viral.1.genomic.headers_map.tsv, headers/viral.2.genomic.headers_map.tsv
-    output: headers/all_genomic.headers_map.txt
-    jobid: 16
-
-Removing temporary output file headers/bacteria.10.genomic.headers_map.tsv.
-Removing temporary output file headers/bacteria.1.genomic.headers_map.tsv.
-Removing temporary output file headers/bacteria.2.genomic.headers_map.tsv.
-Removing temporary output file headers/bacteria.3.genomic.headers_map.tsv.
-Removing temporary output file headers/bacteria.4.genomic.headers_map.tsv.
-Removing temporary output file headers/bacteria.5.genomic.headers_map.tsv.
-Removing temporary output file headers/bacteria.6.genomic.headers_map.tsv.
-Removing temporary output file headers/bacteria.7.genomic.headers_map.tsv.
-Removing temporary output file headers/bacteria.8.genomic.headers_map.tsv.
-Removing temporary output file headers/bacteria.9.genomic.headers_map.tsv.
-Removing temporary output file headers/fungi.1.genomic.headers_map.tsv.
-Removing temporary output file headers/viral.1.genomic.headers_map.tsv.
-Removing temporary output file headers/viral.2.genomic.headers_map.tsv.
-[Tue May  5 11:56:14 2020]
-Finished job 16.
-14 of 30 steps (47%) done
-
-[Tue May  5 11:56:14 2020]
-rule collapse_species:
-    input: headers/all_genomic.headers_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/collapse_orgs.Rmd
-    output: headers/original_taxonomy.txt, headers/version_to_header_map.txt, headers/n_collapsed_version_per_header.txt
-    jobid: 15
-
-
-
-processing file: collapse_orgs.Rmd
-  |                                                                              |                                                                      |   0%  |                                                                              |...                                                                   |   4%
-  ordinary text without R code
-
-  |                                                                              |.....                                                                 |   7%
-label: setup (with options) 
-List of 1
- $ include: logi FALSE
-
-  |                                                                              |........                                                              |  11%
-  ordinary text without R code
-
-  |                                                                              |..........                                                            |  15%
-label: fix weird tax
-  |                                                                              |.............                                                         |  19%
-  ordinary text without R code
-
-  |                                                                              |................                                                      |  22%
-label: check semicolon
-  |                                                                              |..................                                                    |  26%
-  ordinary text without R code
-
-  |                                                                              |.....................                                                 |  30%
-label: standardize species
-  |                                                                              |.......................                                               |  33%
-  ordinary text without R code
-
-  |                                                                              |..........................                                            |  37%
-label: first cap
-  |                                                                              |.............................                                         |  41%
-  ordinary text without R code
-
-  |                                                                              |...............................                                       |  44%
-label: narrow down to orgs with more than 2 words
-  |                                                                              |..................................                                    |  48%
-label: viruses
-  |                                                                              |....................................                                  |  52%
-  ordinary text without R code
-
-  |                                                                              |.......................................                               |  56%
-label: keep if first two words look like a species
-  |                                                                              |.........................................                             |  59%
-  ordinary text without R code
-
-  |                                                                              |............................................                          |  63%
-label: isolate unique orgs
-  |                                                                              |...............................................                       |  67%
-  ordinary text without R code
-
-  |                                                                              |.................................................                     |  70%
-label: leave sp alone
-  |                                                                              |....................................................                  |  74%
-  ordinary text without R code
-
-  |                                                                              |......................................................                |  78%
-label: leave bacterium alone
-  |                                                                              |.........................................................             |  81%
-  ordinary text without R code
-
-  |                                                                              |............................................................          |  85%
-label: end has weird characters
-  |                                                                              |..............................................................        |  89%
-  ordinary text without R code
-
-  |                                                                              |.................................................................     |  93%
-label: end is AZ09
-  |                                                                              |...................................................................   |  96%
-  ordinary text without R code
-
-  |                                                                              |......................................................................| 100%
-label: merge
-
-output file: collapse_orgs.knit.md
-
-/usr/bin/pandoc +RTS -K512m -RTS collapse_orgs.utf8.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output collapse_orgs.html --smart --email-obfuscation none --self-contained --standalone --section-divs --template /scg/apps/software/r/3.6/lib64/R/library/rmarkdown/rmd/h/default.html --no-highlight --variable highlightjs=1 --variable 'theme:bootstrap' --include-in-header /tmp/Rtmp76dpkK/rmarkdown-str78512b91ce1.html --mathjax --variable 'mathjax-url:https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML' 
-
-Output created: collapse_orgs.html
-[Tue May  5 11:56:35 2020]
-Finished job 15.
-15 of 30 steps (50%) done
-
-[Tue May  5 11:56:36 2020]
-rule split_fna:
-    input: fna/fungi.1.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/fungi.1.done
-    log: log/split_fna/fungi.1.log
-    jobid: 12
-    wildcards: sample=fungi.1
-
-
-[Tue May  5 11:56:36 2020]
-rule split_fna:
-    input: fna/bacteria.6.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/bacteria.6.done
-    log: log/split_fna/bacteria.6.log
-    jobid: 8
-    wildcards: sample=bacteria.6
-
-
-[Tue May  5 11:56:36 2020]
-rule split_fna:
-    input: fna/bacteria.5.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/bacteria.5.done
-    log: log/split_fna/bacteria.5.log
-    jobid: 7
-    wildcards: sample=bacteria.5
-
-
-[Tue May  5 11:56:37 2020]
-rule split_fna:
-    input: fna/viral.2.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/viral.2.done
-    log: log/split_fna/viral.2.log
-    jobid: 14
-    wildcards: sample=viral.2
-
-
-[Tue May  5 11:56:37 2020]
-rule split_fna:
-    input: fna/bacteria.2.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/bacteria.2.done
-    log: log/split_fna/bacteria.2.log
-    jobid: 4
-    wildcards: sample=bacteria.2
-
-
-[Tue May  5 11:56:37 2020]
-rule split_fna:
-    input: fna/bacteria.10.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/bacteria.10.done
-    log: log/split_fna/bacteria.10.log
-    jobid: 2
-    wildcards: sample=bacteria.10
-
-
-[Tue May  5 11:56:37 2020]
-rule split_fna:
-    input: fna/bacteria.1.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/bacteria.1.done
-    log: log/split_fna/bacteria.1.log
-    jobid: 3
-    wildcards: sample=bacteria.1
-
-
-[Tue May  5 11:56:37 2020]
-rule split_fna:
-    input: fna/bacteria.3.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/bacteria.3.done
-    log: log/split_fna/bacteria.3.log
-    jobid: 5
-    wildcards: sample=bacteria.3
-
-
-[Tue May  5 11:56:37 2020]
-rule split_fna:
-    input: fna/bacteria.9.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/bacteria.9.done
-    log: log/split_fna/bacteria.9.log
-    jobid: 11
-    wildcards: sample=bacteria.9
-
-
-[Tue May  5 11:56:38 2020]
-rule split_fna:
-    input: fna/bacteria.4.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/bacteria.4.done
-    log: log/split_fna/bacteria.4.log
-    jobid: 6
-    wildcards: sample=bacteria.4
-
-
-[Tue May  5 11:56:38 2020]
-rule split_fna:
-    input: fna/bacteria.8.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/bacteria.8.done
-    log: log/split_fna/bacteria.8.log
-    jobid: 10
-    wildcards: sample=bacteria.8
-
-[Tue May  5 11:56:38 2020]
-Finished job 14.
-16 of 30 steps (53%) done
-
-[Tue May  5 11:56:38 2020]
-rule split_fna:
-    input: fna/bacteria.7.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/bacteria.7.done
-    log: log/split_fna/bacteria.7.log
-    jobid: 9
-    wildcards: sample=bacteria.7
-
-
-[Tue May  5 11:56:38 2020]
-rule split_fna:
-    input: fna/viral.1.1.genomic.fna.gz, headers/version_to_header_map.txt, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/split_species.py
-    output: log/split_fna/viral.1.done
-    log: log/split_fna/viral.1.log
-    jobid: 13
-    wildcards: sample=viral.1
-
-[Tue May  5 11:56:40 2020]
-Finished job 13.
-17 of 30 steps (57%) done
-[Tue May  5 12:01:26 2020]
-Finished job 12.
-18 of 30 steps (60%) done
-[Tue May  5 12:01:43 2020]
-Finished job 7.
-19 of 30 steps (63%) done
-[Tue May  5 12:02:52 2020]
-Finished job 4.
-20 of 30 steps (67%) done
-[Tue May  5 12:03:28 2020]
-Finished job 6.
-21 of 30 steps (70%) done
-[Tue May  5 12:03:35 2020]
-Finished job 9.
-22 of 30 steps (73%) done
-[Tue May  5 12:04:10 2020]
-Finished job 8.
-23 of 30 steps (77%) done
-[Tue May  5 12:04:29 2020]
-Finished job 5.
-24 of 30 steps (80%) done
-[Tue May  5 12:04:31 2020]
-Finished job 2.
-25 of 30 steps (83%) done
-[Tue May  5 12:04:39 2020]
-Finished job 10.
-26 of 30 steps (87%) done
-[Tue May  5 12:05:01 2020]
-Finished job 3.
-27 of 30 steps (90%) done
-[Tue May  5 12:05:51 2020]
-Finished job 11.
-28 of 30 steps (93%) done
-
-[Tue May  5 12:05:51 2020]
-rule merge_species:
-    input: log/split_fna/bacteria.10.done, log/split_fna/bacteria.1.done, log/split_fna/bacteria.2.done, log/split_fna/bacteria.3.done, log/split_fna/bacteria.4.done, log/split_fna/bacteria.5.done, log/split_fna/bacteria.6.done, log/split_fna/bacteria.7.done, log/split_fna/bacteria.8.done, log/split_fna/bacteria.9.done, log/split_fna/fungi.1.done, log/split_fna/viral.1.done, log/split_fna/viral.2.done, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/merge_temp.sh
-    output: log/merge_orgs/merge_orgs.done
-    log: log/merge_orgs/all.log
-    jobid: 1
-    threads: 12
-
-[Tue May  5 12:05:54 2020]
-Error in rule merge_species:
-    jobid: 1
-    output: log/merge_orgs/merge_orgs.done
-    log: log/merge_orgs/all.log (check log file(s) for error message)
-    shell:
-        
-        bash /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/merge_temp.sh 12 > log/merge_orgs/all.log 2>&1
-        touch log/merge_orgs/merge_orgs.done
-        
-        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
-
-Shutting down, this might take some time.
-Exiting because a job execution failed. Look above for error message
-Complete log: /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/.snakemake/log/2020-05-05T115528.737835.snakemake.log
