@@ -19,9 +19,9 @@ library(ggplot2)
 if(!file.exists('all_lengths.tmp.RData')){
   
   all_lengths = fread('all_genomic.headers_map.txt', sep='\t', header=F)
-  colnames(all_lengths) = c('version','header')
-  all_lengths = all_lengths[,.(header)]
-  all_lengths = unique(all_lengths)
+  colnames(all_lengths) = c('version','header','original_species')
+  al = all_lengths[,.(version, original_species)]
+  all_lengths = unique(all_lengths[,.(header, original_species)])
   
   all_lengths[, kingdom := sapply(header, function(x) unname(unlist(strsplit(gsub('.*\\|','',x), ';')))[1])]
   broken = all_lengths[!kingdom %in% c('Bacteria','Eukaryota','Viruses','Archaea')]
@@ -55,14 +55,13 @@ if(!file.exists('all_lengths.tmp.RData')){
     all_lengths = correct
   }
   
-  # get species
-  all_lengths[, species := sapply(header, function(x) tail(unname(unlist(strsplit(x,';'))),1))]
-  save(all_lengths, file='all_lengths.tmp.RData')
+  save(all_lengths, al, file='all_lengths.tmp.RData')
 }else{
   load('all_lengths.tmp.RData')
 }
 nrow(all_lengths)
 spec = all_lengths
+spec[, species := original_species]
 ```
 
 ```{r check semicolon}
@@ -75,7 +74,6 @@ table(spec[,kingdom], spec[,num_levels])
 ```{r standardize species}
 nrow(spec)
 length(unique(spec[,species]))
-spec[,original_species := species]
 uniq_orig = unique(spec[,original_species])
 
 KEEP = list()
@@ -377,16 +375,14 @@ master[species == 'Clostridium_citroniae', species := 'Enterocloster_citroniae']
 master[species ==  'Clostridium_bolteae', species := 'Enterocloster_bolteae']
 master[species == 'Cryptococcus_gattii', species := 'Cryptococcus_gattii_VGI']
 
-master[, count := 1]
-master[, accession := sapply(header, function(x) gsub('>ACCN:', '', unname(unlist(strsplit(x, '\\|')))[1]))]
-master[, beginning_of_header := sapply(header, function(x) paste(head(unname(unlist(strsplit(x, ';'))),-1), collapse=';'))]
-
 write.table(master, 'original_taxonomy.txt', sep='\t', col.names=T, row.names=F, quote=F)
+
+master[, count := 1]
+master[, beginning_of_header := sapply(header, function(x) paste(head(unname(unlist(strsplit(x, ';'))),-1), collapse=';'))]
 
 collapsed = master[,list(kingdom = unique(kingdom),
                          number_collapsed = sum(count),
-                         begin_header = beginning_of_header[1],
-                         accessions = paste(accession, collapse=';')),
+                         begin_header = beginning_of_header[1]),
                    by=species]
 nrow(collapsed)
 collapsed[order(number_collapsed, decreasing = T),.(species, number_collapsed)][1:50]
@@ -394,16 +390,25 @@ stopifnot(nrow(collapsed[duplicated(species)])==0)
 
 # fix header 
 collapsed[,new_header := paste0(begin_header, ';', species)]
-# merge back with accession 
-master = master[,.(accession, original_species, species)]
-m = merge(master, collapsed[,.(species, new_header)], by='species')
-stopifnot(nrow(m)==nrow(all_lengths))
-
-head(m)
-write.table(m[,.(accession, new_header)], 'accession_to_header_map.txt', sep='\t', col.names=F, row.names=F, quote=F)
 
 sub = collapsed[,.(species, number_collapsed, new_header)]
 sub = sub[order(species)]
 head(sub)
-write.table(sub, 'n_collapsed_accession_per_header.txt', sep='\t', col.names=T, row.names=F, quote=F)
+write.table(sub, 'n_collapsed_version_per_header.txt', sep='\t', col.names=T, row.names=F, quote=F)
+
+# merge back to get version 
+collapsed = collapsed[,.(new_header, species)]
+master = master[,.(original_species, species)]
+m1 = merge(collapsed, master, by='species')
+stopifnot(nrow(m1)==nrow(master))
+m1 = unique(m1[,.(new_header, original_species)])
+
+m2 = merge(m1, al, by='original_species')
+stopifnot(nrow(m2)==nrow(al))
+m2 = m2[,.(version, new_header)]
+head(m2)
+nrow(m2)
+length(unique(m2[,new_header]))
+
+write.table(m2, 'version_to_header_map.txt', sep='\t', col.names=F, row.names=F, quote=F)
 ```

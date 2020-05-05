@@ -115,7 +115,7 @@ with gzip.open(gbff,'rt') as refseq, open(outfile, 'w') as out:
 					logging.info(org)
 
 					header = '>ACCN:{0}|{1}'.format(accn,taxonomy)
-					out.write(vers+'\t'+header+'\n')
+					out.write(vers + '\t' + header+'\t' + org + '\n')
 
 					accn = ''
 					org = ''

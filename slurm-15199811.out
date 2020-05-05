@@ -1,0 +1,20 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 12
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	merge_species
+	2
+
+[Tue May  5 12:34:33 2020]
+rule merge_species:
+    input: log/split_fna/bacteria.10.done, log/split_fna/bacteria.1.done, log/split_fna/bacteria.2.done, log/split_fna/bacteria.3.done, log/split_fna/bacteria.4.done, log/split_fna/bacteria.5.done, log/split_fna/bacteria.6.done, log/split_fna/bacteria.7.done, log/split_fna/bacteria.8.done, log/split_fna/bacteria.9.done, log/split_fna/fungi.1.done, log/split_fna/viral.1.done, log/split_fna/viral.2.done, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/merge_temp.sh
+    output: log/merge_orgs/merge_orgs.done
+    log: log/merge_orgs/all.log
+    jobid: 1
+    threads: 12
+
+RuleException in line 78 of /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/Snakefile:
+'Params' object has no attribute 'tmpdir'

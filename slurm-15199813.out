@@ -1,0 +1,45 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 12
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	merge_species
+	2
+
+[Tue May  5 12:38:14 2020]
+rule merge_species:
+    input: log/split_fna/bacteria.10.done, log/split_fna/bacteria.1.done, log/split_fna/bacteria.2.done, log/split_fna/bacteria.3.done, log/split_fna/bacteria.4.done, log/split_fna/bacteria.5.done, log/split_fna/bacteria.6.done, log/split_fna/bacteria.7.done, log/split_fna/bacteria.8.done, log/split_fna/bacteria.9.done, log/split_fna/fungi.1.done, log/split_fna/viral.1.done, log/split_fna/viral.2.done, /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/merge_temp.sh
+    output: log/merge_orgs/merge_orgs.done
+    log: log/merge_orgs/all.log
+    jobid: 1
+    threads: 12
+
+Removing temporary output file log/split_fna/bacteria.10.done.
+Removing temporary output file log/split_fna/bacteria.1.done.
+Removing temporary output file log/split_fna/bacteria.2.done.
+Removing temporary output file log/split_fna/bacteria.3.done.
+Removing temporary output file log/split_fna/bacteria.4.done.
+Removing temporary output file log/split_fna/bacteria.5.done.
+Removing temporary output file log/split_fna/bacteria.6.done.
+Removing temporary output file log/split_fna/bacteria.7.done.
+Removing temporary output file log/split_fna/bacteria.8.done.
+Removing temporary output file log/split_fna/bacteria.9.done.
+Removing temporary output file log/split_fna/fungi.1.done.
+Removing temporary output file log/split_fna/viral.1.done.
+Removing temporary output file log/split_fna/viral.2.done.
+[Tue May  5 12:38:14 2020]
+Finished job 1.
+1 of 2 steps (50%) done
+
+[Tue May  5 12:38:14 2020]
+localrule all:
+    input: log/merge_orgs/merge_orgs.done
+    jobid: 0
+
+Removing temporary output file log/merge_orgs/merge_orgs.done.
+[Tue May  5 12:38:14 2020]
+Finished job 0.
+2 of 2 steps (100%) done
+Complete log: /oak/stanford/groups/smontgom/nicolerg/src/format_refseq/.snakemake/log/2020-05-05T123808.401759.snakemake.log

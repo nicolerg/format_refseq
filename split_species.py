@@ -14,8 +14,9 @@ root.addHandler(handler)
 
 fna = sys.argv[1]
 header_map = sys.argv[2]
+tmpdir = sys.argv[3]
 
-out_prefix = fna.replace('.1.genomic.fna.gz','.').replace('fna/','/tmp/refseq/')
+out_prefix = fna.replace('.1.genomic.fna.gz','.').replace('fna/',(tmpdir+'/'))
 
 # make dictionary of accessions to header
 # ~3 GB
