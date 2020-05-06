@@ -1,10 +1,7 @@
 # Make curated database of RefSeq microbial species 
 This pipeline is designed to collapse microbic genomic sequences from the RefSeq database at the species level.  
 
-From the RefSeq documentation:  
->=============================================================================  
->INTRODUCTION  
->=============================================================================  
+From the RefSeq documentation:   
 >The NCBI Reference Sequence Project (RefSeq) is an effort to provide the   
 >best single collection of naturally occurring biomolecules, representative  
 >of the central dogma, for each major organism. Ideally this would include   
