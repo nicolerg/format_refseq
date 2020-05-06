@@ -1,8 +1,8 @@
 # Make curated database of RefSeq microbial species 
 
 ## General workflow:
-1. Download `.genomic.gbff.gz` and `.genomic.fna.gz` files from the most recent RefSeq release 
-2. Extract taxonomy strings from `.genomic.gbff.gz` for each header in `.genomic.fna.gz`
+1. Download `.genomic.gbff.gz` and `.genomic.fna.gz` files from the most recent RefSeq release (see [download_refseq.sh](download_refseq.sh)). 
+2. Extract taxonomy strings from `.genomic.gbff.gz` for each header (i.e. NCBI version) in `.genomic.fna.gz` (see [format_headers.py](format_headers.py)). For example, the organism below (version NZ_NIDW01000068.1) is assigned the temporary header `>ACCN:NZ_NIDW01000000|Bacteria;Proteobacteria;Gammaproteobacteria;Enterobacterales;Enterobacteriaceae;Escherichia;Escherichia_coli`
       ```
       LOCUS       NZ_NIDW01000068       203076 bp    DNA     linear   CON 01-JUL-2019
       DEFINITION  Escherichia coli strain 17.2p 7000000213718209, whole genome
@@ -18,9 +18,21 @@
                   Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales;
                   Enterobacteriaceae; Escherichia.
       ```
+3. Use taxonomy strings to collapse organisms at the species level (see [collapse_orgs.Rmd](collapse_orgs.Rmd)). Define a single header for each unique species and make a map from NCBI version numbers to curated headers. For example, the following organisms are collapsed into a single species, "Escherichia_coli":  
+      ```
+      Escherichia_coli      
+      Escherichia_coli_0.1288    
+      Escherichia_coli_042   
+      Escherichia_coli_08BKT055439   
+      Escherichia_coli_100329   
+      Escherichia_coli_10.0821   
+      Escherichia_coli_101-1   
+      ```
+4. Using the version-to-header map, iterate through the `.genomic.fna.gz` files. For each sequence, concatenate it to a file named by universal accession (i.e. one accession per curated species); use ~100 Ns to concatenate each contig or strain (see [split_species.py](split_species.py).    
+5. 
 
 ## 1. Download RefSeq database
-Run [`download_refseq.sh`](download_refseq.sh) to download genomic files (`.genomic.fna.gz` and `.genomic.gbff.gz`) from the most recent RefSeq release. As written, it only considers files in the `viral`, `archaea`, `bacteria`, and `fungi` subdirectories of the release. See all possible subdirectories here: **ftp://ftp.ncbi.nlm.nih.gov/refseq/** (GitHub .md does not currently support hyperlinks for FTP sites; you have to copy and paste the address.)
+Run [download_refseq.sh](download_refseq.sh) to download genomic files (`.genomic.fna.gz` and `.genomic.gbff.gz`) from the most recent RefSeq release. As written, it only considers files in the `viral`, `archaea`, `bacteria`, and `fungi` subdirectories of the release. See all possible subdirectories here: **ftp://ftp.ncbi.nlm.nih.gov/refseq/** (GitHub .md does not currently support hyperlinks for FTP sites; you have to copy and paste the address.)
 
 Usage is `bash download_refseq.sh [/path/to/database] [NUM_CORES]`, where `[/path/to/database]` is the directory in which you would like to build the database, and `[NUM_CORES]` is the number of cores available to run the process. For example, this command will use 12 cores to download the files to `/labs/ohlab/REFSEQ`: 
 ```bash
@@ -94,7 +106,7 @@ The header for each sequence includes an NCBI accession and full taxonomy string
 
 Whenever possible, sequences from the same species are concatenated into a single "N\*100"-delimited sequence. When multiple accessions are concatenated, the NCBI accesssion in the taxonomy string corresponds to first first one seen. If necessary, you can find the full version-to-header map in the `headers` subdirectory (`headers/version_to_header_map.txt`). You can also see how many versions were collapsed under each header (`headers/n_collapsed_version_per_header.txt`) as well as the map from species to original taxonomies and accessions (`headers/original_taxonomy.txt`). 
 
-For more details about how organisms are collapsed at the species level, see (`collapse_orgs.Rmd`)[collapse_orgs.Rmd] or `collapse_orgs.html`, which is available in the `format_refseq` directory after the `collapse_species` rule is complete. 
+For more details about how organisms are collapsed at the species level, see (collapse_orgs.Rmd)[collapse_orgs.Rmd] or `collapse_orgs.html`, which is available in the `format_refseq` directory after the `collapse_species` rule is complete. 
 
 ### `all_lengths.txt`
 Each line has format `>ACCN:[universal_accession]|[taxonomy_string] [genome_length]`. For example:
