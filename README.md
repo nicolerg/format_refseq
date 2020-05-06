@@ -1,4 +1,4 @@
-# Make RefSeq database of microbial genomes 
+# Make curated database of RefSeq microbial species 
 
 ## 1. Download RefSeq database
 Run [`download_refseq.sh`](download_refseq.sh) to download genomic files (`.fna.gz` and `.gbff.gz`) from the most recent RefSeq release. As written, it only considers files in the `viral`, `archaea`, `bacteria`, and `fungi` subdirectories of the release. See all possible subdirectories here: [ftp://ftp.ncbi.nlm.nih.gov/refseq/](ftp://ftp.ncbi.nlm.nih.gov/refseq/)
