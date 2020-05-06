@@ -14,7 +14,7 @@ From the RefSeq documentation:
 As of Release 99 (March 5, 2020), there are >70,000 bacterial, archaeal, viral, and fungal organisms in the RefSeq database. The curation performed by this pipeline collapses these organisms down to 48,960 unique species.   
 
 ## 1. Download RefSeq database
-Run [download_refseq.sh](download_refseq.sh) to download genomic files (`.genomic.fna.gz` and `.genomic.gbff.gz`) from the most recent RefSeq release. As written, it only considers files in the `viral`, `archaea`, `bacteria`, and `fungi` subdirectories of the release. See all possible subdirectories here: **ftp://ftp.ncbi.nlm.nih.gov/refseq/release/** (GitHub .md does not currently support hyperlinks for FTP sites; you have to copy and paste the address.)
+Run [download_refseq.sh](download_refseq.sh) to download genomic files (`.genomic.fna.gz` and `.genomic.gbff.gz`) from the most recent RefSeq release. As written, it only considers files in the **viral, archaea, bacteria, and fungi** subdirectories of the release. See all possible subdirectories here: **ftp://ftp.ncbi.nlm.nih.gov/refseq/release/** (GitHub .md does not currently support hyperlinks for FTP sites; you have to copy and paste the address.)
 
 Usage is `bash download_refseq.sh [/path/to/database] [NUM_CORES]`, where `[/path/to/database]` is the directory in which you would like to build the database, and `[NUM_CORES]` is the number of cores available to run the process. For example, this command will use 12 cores to download the files to `/labs/ohlab/REFSEQ`: 
 ```bash
