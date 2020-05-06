@@ -11,7 +11,9 @@ From the RefSeq documentation:
 >may have some, but not all, of this information at any given time. We   
 >pragmatically include the best view we can from available data.  
 
-As of Release 99 (March 5, 2020), there are >70,000 bacterial, archaeal, viral, and fungal organisms in the RefSeq database. The curation performed by this pipeline collapses these organisms down to 48,960 unique species.   
+As of Release 99 (March 5, 2020), there are >70,000 bacterial, archaeal, viral, and fungal organisms in the RefSeq database. The curation performed by this pipeline collapses these organisms down to 48,960 unique species.  
+
+This pipeline is written to be compatible with any version of RefSeq.  
 
 ## 1. Download RefSeq database
 Run [download_refseq.sh](download_refseq.sh) to download genomic files (`.genomic.fna.gz` and `.genomic.gbff.gz`) from the most recent RefSeq release. As written, it only considers files in the **viral, archaea, bacteria, and fungi** subdirectories of the release. See all possible subdirectories here: **ftp://ftp.ncbi.nlm.nih.gov/refseq/release/** (GitHub .md does not currently support hyperlinks for FTP sites; you have to copy and paste the address.)
