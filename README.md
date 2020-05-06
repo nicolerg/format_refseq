@@ -3,19 +3,19 @@
 ## General workflow:
 1. Download `.genomic.gbff.gz` and `.genomic.fna.gz` files from the most recent RefSeq release 
 2. Extract taxonomy strings from `.genomic.gbff.gz` for each header in `.genomic.fna.gz`
->LOCUS       NZ_NIDW01000068       203076 bp    DNA     linear   CON 01-JUL-2019
->DEFINITION  Escherichia coli strain 17.2p 7000000213718209, whole genome
->            shotgun sequence.
->ACCESSION   NZ_NIDW01000068 **NZ_NIDW01000000**
->VERSION     NZ_NIDW01000068.1
->DBLINK      BioProject: PRJNA224116
->            BioSample: SAMN06856382
->            Assembly: GCF_002166095.1
->KEYWORDS    WGS; RefSeq.
->SOURCE      Escherichia coli
->  ORGANISM  **Escherichia coli**
->            **Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales;
->            Enterobacteriaceae; Escherichia.**
+>LOCUS       NZ_NIDW01000068       203076 bp    DNA     linear   CON 01-JUL-2019  
+>DEFINITION  Escherichia coli strain 17.2p 7000000213718209, whole genome  
+>            shotgun sequence.  
+>ACCESSION   NZ_NIDW01000068 **NZ_NIDW01000000**  
+>VERSION     NZ_NIDW01000068.1  
+>DBLINK      BioProject: PRJNA224116  
+>            BioSample: SAMN06856382  
+>            Assembly: GCF_002166095.1  
+>KEYWORDS    WGS; RefSeq.  
+>SOURCE      Escherichia coli  
+>  ORGANISM  **Escherichia coli**  
+>            **Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales;  
+>            Enterobacteriaceae; Escherichia.**  
 
 ## 1. Download RefSeq database
 Run [`download_refseq.sh`](download_refseq.sh) to download genomic files (`.genomic.fna.gz` and `.genomic.gbff.gz`) from the most recent RefSeq release. As written, it only considers files in the `viral`, `archaea`, `bacteria`, and `fungi` subdirectories of the release. See all possible subdirectories here: **ftp://ftp.ncbi.nlm.nih.gov/refseq/** (GitHub .md does not currently support hyperlinks for FTP sites; you have to copy and paste the address.)
