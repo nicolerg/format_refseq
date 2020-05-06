@@ -2,7 +2,7 @@
 
 ## General workflow:
 1. Download `.genomic.gbff.gz` and `.genomic.fna.gz` files from the most recent RefSeq release (see [download_refseq.sh](download_refseq.sh)). 
-2. Extract taxonomy strings from `.genomic.gbff.gz` for each header (i.e. NCBI version) in `.genomic.fna.gz` (see [format_headers.py](format_headers.py)). For example, the organism below (version NZ_NIDW01000068.1) is assigned the temporary header `>ACCN:NZ_NIDW01000000|Bacteria;Proteobacteria;Gammaproteobacteria;Enterobacterales;Enterobacteriaceae;Escherichia;Escherichia_coli`
+2. Extract taxonomy strings from `.genomic.gbff.gz` for each header (i.e. NCBI version) in `.genomic.fna.gz` (see [format_headers.py](format_headers.py)). For example, from an excerpt of a `.gbff.gz` file below, the organism (version NZ_NIDW01000068.1) is assigned the temporary header ```>ACCN:NZ_NIDW01000000|Bacteria;Proteobacteria;Gammaproteobacteria;Enterobacterales;Enterobacteriaceae;Escherichia;Escherichia_coli```
       ```
       LOCUS       NZ_NIDW01000068       203076 bp    DNA     linear   CON 01-JUL-2019
       DEFINITION  Escherichia coli strain 17.2p 7000000213718209, whole genome
