@@ -48,7 +48,8 @@ R
 Edit the paths in the [`Snakefile`](Snakefile):
 - `srcdir`: full path to this cloned repository, e.g. `/labs/ohlab/nicolerg/format_refseq`
 - `base`: same as `[/path/to/database]` in [Step 1](#1-download-refseq-database). This **must** include the `fna` and `gbff` subdirectories generated in [Step 1](#1-download-refseq-database). 
-- `tmpdir`: scratch space or another directory with \~500 GB of available space, e.g. `/tmp/refseq`. Finalized files are moved from `${tmpdir}` to `${base}`.
+- `tmpdir`: scratch space or another directory with \~500 GB of available space, e.g. `/tmp/refseq`  
+Finalized files are moved from `${tmpdir}` to `${base}`.  
 
 The more cores that are allocated, the faster this pipeline will run. Choose a number of cores that will be available in a reasonable amount of time based on your experience with the cluster you are using. 
 
