@@ -30,7 +30,7 @@ R
 ```
 
 ## 3. Run the pipeline 
-Edit the paths in the [`Snakemake`](Snakemake) file:
+Edit the paths in the [`Snakefile`](Snakefile):
 - `srcdir`: full path to this cloned repository, e.g. `/labs/ohlab/nicolerg/format_refseq`
 - `base`: same as `[/path/to/database]` in [Step 1](#download-refseq-database). This **must** include the `fna` and `gbff` subdirectories generated in [Step 1](#download-refseq-database). 
 - `tmpdir`: scratch space or another directory with \~500 GB of available space, e.g. `/tmp/refseq`. Finalized files are moved from `${tmpdir}` to `${base}`.
