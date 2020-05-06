@@ -6,9 +6,16 @@ import subprocess
 from datetime import datetime
 import re 
 
+######################################################################
+## THESE ARE THE ONLY LINES THAT NEED TO BE USER-MODIFIED
+##
 srcdir = '/oak/stanford/groups/smontgom/nicolerg/src/format_refseq'
 base = '/oak/stanford/groups/smontgom/nicolerg/REFSEQ'
 tmpdir = '/tmp/refseq'
+##
+#######################################################################
+
+
 os.chdir(base)
 
 SAMPLES = subprocess.check_output('ls gbff/*.gz | sed "s/\.genomic.*//" | sed "s/^gbff\///"', shell=True).decode().strip().split()
