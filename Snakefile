@@ -1,3 +1,6 @@
+__author__ = 'nicolerg'
+__date__ = '5 May 2020'
+
 import os
 import subprocess
 from datetime import datetime
@@ -93,5 +96,3 @@ rule merge_species:
         bash {input.script} {params.tmp} {threads} > {log} 2>&1
         touch {output}
         '''
-
-
