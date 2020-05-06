@@ -3,7 +3,7 @@ This pipeline is designed to collapse microbic genomic sequences from the RefSeq
 
 From the RefSeq documentation:  
 >=============================================================================  
->1. INTRODUCTION  
+>INTRODUCTION  
 >=============================================================================  
 >The NCBI Reference Sequence Project (RefSeq) is an effort to provide the   
 >best single collection of naturally occurring biomolecules, representative  
