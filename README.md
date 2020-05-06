@@ -1,5 +1,10 @@
 # Make curated database of RefSeq microbial species 
 
+## General workflow:
+1. Download `.genomic.gbff.gz` and `.genomic.fna.gz` files from the most recent RefSeq release 
+2. Extract taxonomy strings from `.genomic.gbff.gz` for each header in `.genomic.fna.gz` 
+  - 
+
 ## 1. Download RefSeq database
 Run [`download_refseq.sh`](download_refseq.sh) to download genomic files (`.genomic.fna.gz` and `.genomic.gbff.gz`) from the most recent RefSeq release. As written, it only considers files in the `viral`, `archaea`, `bacteria`, and `fungi` subdirectories of the release. See all possible subdirectories here: **ftp://ftp.ncbi.nlm.nih.gov/refseq/** (GitHub .md does not currently support hyperlinks for FTP sites; you have to copy and paste the address.)
 
