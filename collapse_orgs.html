@@ -228,25 +228,32 @@ summary {
   load('all_lengths.tmp.RData')
 }</code></pre>
 <pre><code>## 
-## Bacteria 
-##       19</code></pre>
+## Bacteria  Viruses 
+##      878       21</code></pre>
 <pre class="r"><code>nrow(all_lengths)</code></pre>
-<pre><code>## [1] 939</code></pre>
+<pre><code>## [1] 281405</code></pre>
 <pre class="r"><code>spec = all_lengths
 spec[, species := original_species]</code></pre>
 <pre class="r"><code>spec[, num_levels := sapply(header, function(x) length(unname(unlist(strsplit(x,';')))))]
 table(spec[,kingdom], spec[,num_levels])</code></pre>
 <pre><code>##            
-##               2   3   5   6   7   8   9  10  11  12
-##   Bacteria   19   1  20  45 736  84   2   0   0   0
-##   Eukaryota   0   0   0  12   0   0   1   2  10   1
-##   Viruses     0   0   1   1   0   0   4   0   0   0</code></pre>
+##                  2      3      4      5      6      7      8      9     10
+##   Archaea        1      5      7      9     25    332    699    188      0
+##   Bacteria     946    397    155   1334  16748 166385  24626    551      3
+##   Eukaryota      0      0      0    678    594     94    217   2110  11888
+##   Viruses        2    266   3948   3215   2682    611     28    929    454
+##            
+##                 11     12     13     14
+##   Archaea        0      0      0      0
+##   Bacteria       0      0      0      0
+##   Eukaryota  36185   4059    492    495
+##   Viruses       42      5      0      0</code></pre>
 <pre class="r"><code>#unique(gsub('.*\\|','',spec[kingdom!='Eukaryota' &amp; num_levels &gt; 10, header]))
 #unique(gsub('.*\\|','',spec[num_levels &gt; 12, header]))</code></pre>
 <pre class="r"><code>nrow(spec)</code></pre>
-<pre><code>## [1] 939</code></pre>
+<pre><code>## [1] 281405</code></pre>
 <pre class="r"><code>length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 514</code></pre>
+<pre><code>## [1] 72608</code></pre>
 <pre class="r"><code>uniq_orig = unique(spec[,original_species])
 
 KEEP = list()
@@ -267,7 +274,7 @@ for (c in letbe){
   spec = spec[!grepl(c, header)]
 }
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 514</code></pre>
+<pre><code>## [1] 72562</code></pre>
 <pre class="r"><code># remove everything after...
 spec[, species := gsub('_subsp\\..*', '', species)]
 spec[, species := gsub('_bv\\..*', '', species)]
@@ -307,7 +314,7 @@ spec[, species := gsub('_$', '', species)]
 spec[, first_two_words := sapply(species, function(x) paste(unname(unlist(strsplit(x,'_')))[1:2], collapse='_'))]
 SPEC = spec # save for later
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 474</code></pre>
+<pre><code>## [1] 68010</code></pre>
 <pre class="r"><code>cap_first = function(x){
   first_letter = unname(unlist(strsplit(x, '')))[1]
   if(first_letter == toupper(first_letter)){
@@ -318,8 +325,8 @@ length(unique(spec[,species]))</code></pre>
 spec[,cap_first := sapply(species, cap_first)]
 table(spec[,cap_first])</code></pre>
 <pre><code>## 
-##   1 
-## 939</code></pre>
+##      0      1 
+##    220 281040</code></pre>
 <pre class="r"><code>#gsub('.*;','',spec[cap_first == 0, header])
 
 # leave it alone if it starts with a lowercase letter
@@ -327,24 +334,46 @@ KEEP[[i]] = spec[cap_first == 0]
 i = i+1
 spec = spec[cap_first == 1]
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 474</code></pre>
+<pre><code>## [1] 67820</code></pre>
 <pre class="r"><code># how many words are there in the species substring now?
 spec[, species_word_count := sapply(species, function(x) length(unname(unlist(strsplit(x, '_')))))]
 table(spec[,species_word_count], spec[,kingdom])</code></pre>
-<pre><code>##    
-##     Bacteria Eukaryota Viruses
-##   2      626        13       0
-##   3      197         1       3
-##   4       69        12       3
-##   5       14         0       0
-##   6        1         0       0</code></pre>
+<pre><code>##     
+##      Archaea Bacteria Eukaryota Viruses
+##   1        0        0         0      18
+##   2      810   180581     35629    1680
+##   3      256    21846      7887    4887
+##   4      181     6483     12130    3890
+##   5        6     1661      1166    1274
+##   6        0      216         0     302
+##   7        0        4         0      89
+##   8        0        4         0      31
+##   9        0        2         0       5
+##   11       0        2         0       0</code></pre>
 <pre class="r"><code>spec[species_word_count == 1, header]</code></pre>
-<pre><code>## character(0)</code></pre>
+<pre><code>##  [1] &quot;&gt;ACCN:NC_027818|Viruses;Riboviria;Picornavirales;Picornaviridae;Hepatovirus;Phopivirus&quot;                                                                                                              
+##  [2] &quot;&gt;ACCN:NC_028824|Viruses;Riboviria;Nidovirales;Cornidovirineae;Coronaviridae;Orthocoronavirinae;Alphacoronavirus;unclassifiedAlphacoronavirus;BtRf-AlphaCoV/YN2012&quot;                                   
+##  [3] &quot;&gt;ACCN:NC_028814|Viruses;Riboviria;Nidovirales;Cornidovirineae;Coronaviridae;Orthocoronavirinae;Alphacoronavirus;Decacovirus;Rhinolophusferrumequinum_alphacoronavirus_HuB-2013;BtRf-AlphaCoV/HuB2013&quot;
+##  [4] &quot;&gt;ACCN:NC_028833|Viruses;Riboviria;Nidovirales;Cornidovirineae;Coronaviridae;Orthocoronavirinae;Alphacoronavirus;Nyctacovirus;Nyctalusvelutinus_alphacoronavirus_SC-2013;BtNv-AlphaCoV/SC2013&quot;        
+##  [5] &quot;&gt;ACCN:NC_028811|Viruses;Riboviria;Nidovirales;Cornidovirineae;Coronaviridae;Orthocoronavirinae;Alphacoronavirus;Myotacovirus;Myotis_rickettialphacoronavirus_Sax-2011;BtMr-AlphaCoV/SAX2011&quot;         
+##  [6] &quot;&gt;ACCN:NC_033775|Viruses;Marseillevirus;unclassified_Marseillevirus;Noumeavirus&quot;                                                                                                                      
+##  [7] &quot;&gt;ACCN:NC_023843|Viruses;unclassified_viruses;unclassified_DNA_viruses;unclassified_ssDNA_viruses;Nepavirus&quot;                                                                                          
+##  [8] &quot;&gt;ACCN:NC_023850|Viruses;Geminiviridae;unclassified_Geminiviridae;Baminivirus&quot;                                                                                                                        
+##  [9] &quot;&gt;ACCN:NC_023851|Viruses;Geminiviridae;unclassified_Geminiviridae;Niminivirus&quot;                                                                                                                        
+## [10] &quot;&gt;ACCN:NC_024888|Viruses;Parvoviridae;Parvovirinae;Bufavirus-3&quot;                                                                                                                                       
+## [11] &quot;&gt;ACCN:NC_025412|Viruses;Marseillevirus;unclassified_Marseillevirus;Melbournevirus&quot;                                                                                                                   
+## [12] &quot;&gt;ACCN:NC_007454|Viruses;Riboviria;Negarnaviricota;Haploviricotina;Monjiviricetes;Mononegavirales;Paramyxoviridae;Orthoparamyxovirinae;Jeilongvirus;Jun_jeilongvirus;J-virus&quot;                         
+## [13] &quot;&gt;ACCN:NC_007815|Viruses;Ortervirales;Retroviridae;Orthoretrovirinae;Gammaretrovirus;unclassified_Gammaretrovirus;PreXMRV-1&quot;                                                                          
+## [14] &quot;&gt;ACCN:NC_001366|Viruses;Riboviria;Picornavirales;Picornaviridae;Cardiovirus;Theilovirus&quot;                                                                                                             
+## [15] &quot;&gt;ACCN:NC_034249|Viruses;unclassified_viruses;Kaumoebavirus&quot;                                                                                                                                          
+## [16] &quot;&gt;ACCN:NC_028047|Viruses;Lausannevirus&quot;                                                                                                                                                               
+## [17] &quot;&gt;ACCN:NC_011024|Viruses;Geminiviridae;Begomovirus;TYLCAxV-Sic1-[IT:Sic2/2:04]&quot;                                                                                                                       
+## [18] &quot;&gt;ACCN:NC_039050|Viruses;Parvoviridae;Parvovirinae;Protoparvovirus;Cutavirus&quot;</code></pre>
 <pre class="r"><code>KEEP[[i]] = spec[species_word_count &lt;= 2]
 i = i+1
 spec = spec[species_word_count &gt; 2]
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 285</code></pre>
+<pre><code>## [1] 32121</code></pre>
 <pre class="r"><code># a lot of these are viruses, which are going to have weird taxonomies. accept them as they are 
 
 # very few viruses are collapsible. don't bother trying 
@@ -378,51 +407,121 @@ KEEP[[i]] = spec[kingdom == 'Viruses']
 i = i+1
 spec = spec[kingdom != 'Viruses'] 
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 279</code></pre>
+<pre><code>## [1] 23783</code></pre>
 <pre class="r"><code>table(spec[,first_two_words] %in% uniq_orig)</code></pre>
 <pre><code>## 
 ## FALSE  TRUE 
-##   223    71</code></pre>
+## 11557 40287</code></pre>
 <pre class="r"><code>t = data.table(table(spec[first_two_words %in% uniq_orig,first_two_words]))
 t = t[order(N, decreasing = T)]
 nrow(t)</code></pre>
-<pre><code>## [1] 16</code></pre>
+<pre><code>## [1] 2196</code></pre>
 <pre class="r"><code>head(t, 50)</code></pre>
-<pre><code>##                             V1  N
-##  1:           Escherichia_coli 22
-##  2:    Acinetobacter_baumannii 16
-##  3:     Pseudomonas_aeruginosa  7
-##  4:    Vibrio_parahaemolyticus  5
-##  5:      Klebsiella_pneumoniae  4
-##  6:       Enterococcus_faecium  3
-##  7:            Vibrio_cholerae  3
-##  8:          Bacillus_subtilis  2
-##  9:      Clostridium_botulinum  2
-## 10:        Cordyceps_militaris  1
-## 11:  Enterobacter_roggenkampii  1
-## 12: Mycobacterium_tuberculosis  1
-## 13:         Pseudomonas_putida  1
-## 14:      Staphylococcus_aureus  1
-## 15: Staphylococcus_epidermidis  1
-## 16:          Weissella_cibaria  1</code></pre>
+<pre><code>##                               V1    N
+##  1:        Staphylococcus_aureus 3918
+##  2:             Escherichia_coli 3406
+##  3:   Mycobacterium_tuberculosis 1859
+##  4:           Aspergillus_nomius 1118
+##  5:      Rhizophagus_irregularis 1111
+##  6:         Rasamsonia_emersonii  862
+##  7:      Acinetobacter_baumannii  820
+##  8:       Talaromyces_stipitatus  820
+##  9:          Bipolaris_victoriae  676
+## 10:             Laccaria_bicolor  665
+## 11:        Aspergillus_aculeatus  660
+## 12:   Colletotrichum_graminicola  654
+## 13:        Trichoderma_harzianum  532
+## 14:      Trichophyton_verrucosum  523
+## 15:        Talaromyces_marneffei  452
+## 16:         Aspergillus_fischeri  438
+## 17:       Trichoderma_asperellum  419
+## 18:          Helicobacter_pylori  381
+## 19:              Vibrio_cholerae  364
+## 20:           Aspergillus_flavus  331
+## 21:        Klebsiella_pneumoniae  326
+## 22:              Yersinia_pestis  304
+## 23:     Streptococcus_agalactiae  298
+## 24:           Rhodococcus_opacus  289
+## 25:          Tilletiaria_anomala  289
+## 26:    Vanderwaltozyma_polyspora  281
+## 27:     Streptococcus_pneumoniae  280
+## 28:       Pseudomonas_aeruginosa  269
+## 29:      Vibrio_parahaemolyticus  264
+## 30:     Clostridioides_difficile  263
+## 31:            Shigella_flexneri  256
+## 32:        Penicilliopsis_zonata  246
+## 33:      Borreliella_burgdorferi  241
+## 34:    Burkholderia_pseudomallei  229
+## 35:       Streptococcus_pyogenes  226
+## 36:             Bipolaris_maydis  207
+## 37:          Hyaloscypha_bicolor  206
+## 38:    Aspergillus_heteromorphus  205
+## 39:       Neisseria_meningitidis  195
+## 40:      Aureobasidium_pullulans  186
+## 41:              Bacillus_cereus  185
+## 42:           Aspergillus_uvarum  172
+## 43:         Aspergillus_neoniger  169
+## 44:           Fusarium_oxysporum  168
+## 45:         Streptococcus_mutans  165
+## 46:        Aspergillus_japonicus  163
+## 47:             Borrelia_hermsii  160
+## 48:               Mixia_osmundae  156
+## 49: Aspergillus_brunneoviolaceus  153
+## 50:      Aspergillus_homomorphus  152
+##                               V1    N</code></pre>
 <pre class="r"><code>tail(t, 50)</code></pre>
-<pre><code>##                             V1  N
-##  1:           Escherichia_coli 22
-##  2:    Acinetobacter_baumannii 16
-##  3:     Pseudomonas_aeruginosa  7
-##  4:    Vibrio_parahaemolyticus  5
-##  5:      Klebsiella_pneumoniae  4
-##  6:       Enterococcus_faecium  3
-##  7:            Vibrio_cholerae  3
-##  8:          Bacillus_subtilis  2
-##  9:      Clostridium_botulinum  2
-## 10:        Cordyceps_militaris  1
-## 11:  Enterobacter_roggenkampii  1
-## 12: Mycobacterium_tuberculosis  1
-## 13:         Pseudomonas_putida  1
-## 14:      Staphylococcus_aureus  1
-## 15: Staphylococcus_epidermidis  1
-## 16:          Weissella_cibaria  1</code></pre>
+<pre><code>##                              V1 N
+##  1:       Veillonella_seminalis 1
+##  2:       Verticillium_alfalfae 1
+##  3:        Verticillium_dahliae 1
+##  4:        Vibrio_caribbeanicus 1
+##  5:      Vibrio_cincinnatiensis 1
+##  6:           Vibrio_diabolicus 1
+##  7:       Vibrio_diazotrophicus 1
+##  8:               Vibrio_ezurae 1
+##  9:          Vibrio_halioticoli 1
+## 10:             Vibrio_kanaloae 1
+## 11:         Vibrio_mediterranei 1
+## 12:        Vibrio_metschnikovii 1
+## 13:               Vibrio_nereis 1
+## 14:           Vibrio_rumoiensis 1
+## 15:          Vibrio_scophthalmi 1
+## 16:          Vibrio_sinaloensis 1
+## 17:            Vibrio_superstes 1
+## 18:      Viridibacillus_arenosi 1
+## 19:       Wallemia_ichthyophaga 1
+## 20:          Wallemia_mellicola 1
+## 21:            Weeksella_virosa 1
+## 22:              Weissella_ceti 1
+## 23:           Weissella_cibaria 1
+## 24:           Weissella_confusa 1
+## 25: Weissella_paramesenteroides 1
+## 26:          Williamsia_muralis 1
+## 27:                Winkia_neuii 1
+## 28:      Wolinella_succinogenes 1
+## 29:  Xanthobacter_autotrophicus 1
+## 30:     Xanthomonas_albilineans 1
+## 31:      Xanthomonas_arboricola 1
+## 32:      Xanthomonas_campestris 1
+## 33:       Xanthomonas_fragariae 1
+## 34:        Xanthomonas_gardneri 1
+## 35:       Xanthomonas_perforans 1
+## 36:            Xanthomonas_pisi 1
+## 37:        Xanthomonas_sacchari 1
+## 38:     Xanthomonas_translucens 1
+## 39:        Xenorhabdus_bovienii 1
+## 40: Xylanimonas_cellulosilytica 1
+## 41:           Yamadazyma_tenuis 1
+## 42:         Yersinia_bercovieri 1
+## 43:         Yersinia_intermedia 1
+## 44:       Yersinia_kristensenii 1
+## 45:       Yersinia_massiliensis 1
+## 46:             Yersinia_rohdei 1
+## 47:          Zhouia_amylolytica 1
+## 48:     Zooshikella_ganghwensis 1
+## 49:           Zymobacter_palmae 1
+## 50:        Zymoseptoria_tritici 1
+##                              V1 N</code></pre>
 <pre class="r"><code>t[grepl(&quot;\\.|\\(&quot;, V1)]</code></pre>
 <pre><code>## Empty data.table (0 rows and 2 cols): V1,N</code></pre>
 <pre class="r"><code>sub = spec[first_two_words %in% uniq_orig]
@@ -432,45 +531,49 @@ KEEP[[i]] = sub
 i = i+1
 spec = spec[!first_two_words %in% uniq_orig]
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 210</code></pre>
+<pre><code>## [1] 5259</code></pre>
 <pre class="r"><code># if the first two words are unique, then it's likely not collapsible 
 all = SPEC[,first_two_words]
 t = data.table(table(all))
 t = t[N==1]
 singular = t[,all]
 length(singular)</code></pre>
-<pre><code>## [1] 279</code></pre>
+<pre><code>## [1] 29247</code></pre>
 <pre class="r"><code>a = spec[first_two_words %in% singular, species]
 a = a[order(a)]
 length(a)</code></pre>
-<pre><code>## [1] 124</code></pre>
+<pre><code>## [1] 2671</code></pre>
 <pre class="r"><code>#a[1:100]
 sprintf(&quot;The first two words in the last taxonomy substring are unique for %s out of %s cases. Assume these can't be further collapsed.&quot;, length(a), length(unique(spec[,first_two_words])))</code></pre>
-<pre><code>## [1] &quot;The first two words in the last taxonomy substring are unique for 124 out of 141 cases. Assume these can't be further collapsed.&quot;</code></pre>
+<pre><code>## [1] &quot;The first two words in the last taxonomy substring are unique for 2671 out of 3644 cases. Assume these can't be further collapsed.&quot;</code></pre>
 <pre class="r"><code>KEEP[[i]] = spec[first_two_words %in% singular]
 i = i+1
 spec = spec[!first_two_words %in% singular]
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 86</code></pre>
+<pre><code>## [1] 2588</code></pre>
 <pre class="r"><code>head(gsub('.*;','',unique(spec[grepl('sp\\.',species), species])))</code></pre>
-<pre><code>## [1] &quot;Enterobacter_cloacae_complex_sp.&quot; &quot;Bacillus_sp.JCM_19046&quot;           
-## [3] &quot;Bacillus_sp.JCM_19045&quot;</code></pre>
+<pre><code>## [1] &quot;CandidatusMethanolliviera_sp.GoM_oil&quot;    
+## [2] &quot;CandidatusMethanolliviera_sp.GoM_asphalt&quot;
+## [3] &quot;Haloferax_sp.ATCC_BAA-646&quot;               
+## [4] &quot;Haloferax_sp.ATCC_BAA-645&quot;               
+## [5] &quot;Haloferax_sp.ATCC_BAA-644&quot;               
+## [6] &quot;Pseudomonas_sp.ICMP_10191&quot;</code></pre>
 <pre class="r"><code># leave them alone
 KEEP[[i]] = spec[grepl('sp\\.',species)]
 i = i+1
 spec = spec[!grepl('sp\\.',species)]
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 83</code></pre>
+<pre><code>## [1] 1268</code></pre>
 <pre class="r"><code>bacterium = spec[grepl('_bacterium_', species)]
 nrow(bacterium)</code></pre>
-<pre><code>## [1] 0</code></pre>
+<pre><code>## [1] 276</code></pre>
 <pre class="r"><code>#bacterium[order(species), species][1:100]
 
 KEEP[[i]] = bacterium
 i = i+1
 spec = spec[!grepl('_bacterium_',species)]
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 83</code></pre>
+<pre><code>## [1] 1003</code></pre>
 <pre class="r"><code>#spec[order(species),species][1:100]
 
 # collapse, checking end of string 
@@ -536,17 +639,18 @@ first_two = sapply(r, function(x) paste(unname(unlist(strsplit(x,'_')))[1:2], co
 t = data.table(table(first_two))
 t = t[N&gt;1]
 nrow(t)</code></pre>
-<pre><code>## [1] 11</code></pre>
+<pre><code>## [1] 144</code></pre>
 <pre class="r"><code>head(t)</code></pre>
 <pre><code>##                    first_two N
-## 1:      Aeromonas_hydrophila 5
-## 2:  Amycolatopsis_orientalis 2
-## 3: Bordetella_bronchiseptica 8
-## 4:      Bordetella_pertussis 4
-## 5: Burkholderia_pseudomallei 5
-## 6:        Campylobacter_coli 4</code></pre>
+## 1:      Actinobacillus_minor 2
+## 2:  Actinomyces_massiliensis 2
+## 3:    Advenella_kashmirensis 2
+## 4: Agrobacterium_radiobacter 2
+## 5:    Algoriphagus_marincola 2
+## 6: Amycolatopsis_balhimycina 2</code></pre>
 <pre class="r"><code>t[grepl('-',first_two)]</code></pre>
-<pre><code>## Empty data.table (0 rows and 2 cols): first_two,N</code></pre>
+<pre><code>##                   first_two N
+## 1: Aphanizomenon_flos-aquae 2</code></pre>
 <pre class="r"><code>sub = spec[first_two_words %in% t[,first_two]]
 sub[, species := first_two_words]
 
@@ -554,14 +658,14 @@ KEEP[[i]] = sub
 i=i+1
 spec = spec[!first_two_words %in% t[,first_two]]
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 4</code></pre>
+<pre><code>## [1] 397</code></pre>
 <pre class="r"><code># in keep[, first_two_words]?
 tmp = rbindlist(KEEP, fill=T)
 seen = unique(tmp[,species])
 table(spec[,first_two_words] %in% seen)</code></pre>
 <pre><code>## 
 ## FALSE  TRUE 
-##    14     2</code></pre>
+##  2864   247</code></pre>
 <pre class="r"><code>sub = spec[first_two_words %in% seen]
 sub[,species := first_two_words]
 #unique(sub[,species])
@@ -570,7 +674,7 @@ KEEP[[i]] = sub
 i = i+1
 spec = spec[!first_two_words %in% seen]
 length(unique(spec[,species]))</code></pre>
-<pre><code>## [1] 2</code></pre>
+<pre><code>## [1] 333</code></pre>
 <pre class="r"><code># these have and end entirely made of [A-Z0-9]
 #unique(spec[,species])
 
@@ -602,60 +706,60 @@ collapsed = master[,list(kingdom = unique(kingdom),
                          begin_header = beginning_of_header[1]),
                    by=species]
 nrow(collapsed)</code></pre>
-<pre><code>## [1] 337</code></pre>
+<pre><code>## [1] 49135</code></pre>
 <pre class="r"><code>collapsed[order(number_collapsed, decreasing = T),.(species, number_collapsed)][1:50]</code></pre>
-<pre><code>##                              species number_collapsed
-##  1:                 Escherichia_coli              143
-##  2:            Staphylococcus_aureus              113
-##  3:                  Vibrio_cholerae               91
-##  4:              Salmonella_enterica               39
-##  5:          Acinetobacter_baumannii               28
-##  6:             Streptococcus_mutans               21
-##  7:           Pseudomonas_aeruginosa               20
-##  8:            Rhizobiales_bacterium               19
-##  9:                  Yersinia_pestis               18
-## 10:           Encephalitozoon_hellem               12
-## 11:                Bacillus_subtilis                9
-## 12:            Klebsiella_pneumoniae                8
-## 13:        Bordetella_bronchiseptica                8
-## 14:           Xanthomonas_axonopodis                7
-## 15:          Vibrio_parahaemolyticus                7
-## 16:            Clostridium_botulinum                6
-## 17:             Enterobacter_cloacae                5
-## 18:             Enterococcus_faecium                5
-## 19:                   Brucella_canis                5
-## 20:        Burkholderia_pseudomallei                5
-## 21:             Aeromonas_hydrophila                5
-## 22:              Porphyromonas_gulae                4
-## 23:              Serratia_marcescens                4
-## 24:  Actinobacillus_pleuropneumoniae                4
-## 25:               Campylobacter_coli                4
-## 26:            Enterococcus_faecalis                4
-## 27:             Bordetella_pertussis                4
-## 28:           Listeria_monocytogenes                3
-## 29:             Campylobacter_jejuni                3
-## 30:             Pseudomonas_syringae                3
-## 31:               Lactococcus_lactis                3
-## 32:           Francisella_tularensis                3
-## 33:        Enterobacter_roggenkampii                3
-## 34:         Pseudomonas_chlororaphis                2
-## 35:          Enterobacter_hormaechei                2
-## 36:              Pantoea_agglomerans                2
-## 37:             Arcobacter_lanthieri                2
-## 38:          Amycolatopsis_thermalba                2
-## 39:              Campylobacter_fetus                2
-## 40:     Chromobacterium_haemolyticum                2
-## 41:                 Bordetella_avium                2
-## 42:       Mycobacterium_tuberculosis                2
-## 43:                Weissella_cibaria                2
-## 44:       Bacillus_thermoamylovorans                2
-## 45:       Staphylococcus_epidermidis                2
-## 46:               Pseudomonas_putida                2
-## 47:              Cordyceps_militaris                2
-## 48: Enterobacter_cloacae_complex_sp.                2
-## 49:                  Oenococcus_oeni                2
-## 50:      Porphyromonas_crevioricanis                2
-##                              species number_collapsed</code></pre>
+<pre><code>##                        species number_collapsed
+##  1:           Escherichia_coli            23226
+##  2:      Staphylococcus_aureus            11926
+##  3:        Salmonella_enterica            11866
+##  4:      Klebsiella_pneumoniae            11204
+##  5:   Streptococcus_pneumoniae             8384
+##  6: Mycobacterium_tuberculosis             6607
+##  7:     Pseudomonas_aeruginosa             5632
+##  8:    Acinetobacter_baumannii             5266
+##  9:     Listeria_monocytogenes             3289
+## 10:       Enterococcus_faecium             2581
+## 11:     Streptococcus_pyogenes             2068
+## 12:     Neisseria_meningitidis             1965
+## 13:   Clostridioides_difficile             1913
+## 14:       Campylobacter_jejuni             1742
+## 15:  Burkholderia_pseudomallei             1727
+## 16:  Mycobacteroides_abscessus             1689
+## 17:        Helicobacter_pylori             1643
+## 18:         Borrelia_miyamotoi             1637
+## 19:      Enterococcus_faecalis             1617
+## 20: Sordaria_macrospora_k-hell             1583
+## 21:    Vibrio_parahaemolyticus             1558
+## 22:    Pseudomonas_viridiflava             1517
+## 23:            Shigella_sonnei             1405
+## 24:            Vibrio_cholerae             1364
+## 25:   Streptococcus_agalactiae             1324
+## 26:         Streptococcus_suis             1277
+## 27:            Bacillus_cereus             1205
+## 28:         Aspergillus_nomius             1120
+## 29:    Rhizophagus_irregularis             1112
+## 30:    Enterobacter_hormaechei             1030
+## 31:         Campylobacter_coli             1008
+## 32:     Bacillus_thuringiensis              937
+## 33:    Lactobacillus_plantarum              898
+## 34: Staphylococcus_epidermidis              884
+## 35:      Rhizobiales_bacterium              876
+## 36:       Rasamsonia_emersonii              863
+## 37:     Legionella_pneumophila              861
+## 38:       Bordetella_pertussis              840
+## 39:     Talaromyces_stipitatus              822
+## 40:       Enterobacter_cloacae              807
+## 41:     Haemophilus_influenzae              771
+## 42:          Shigella_flexneri              740
+## 43:       Aspergillus_caelatus              730
+## 44:        Serratia_marcescens              728
+## 45:      Neisseria_gonorrhoeae              713
+## 46:        Lachnellula_hyalina              687
+## 47:        Bipolaris_victoriae              677
+## 48:         Fusarium_oxysporum              674
+## 49:           Laccaria_bicolor              666
+## 50:      Aspergillus_aculeatus              661
+##                        species number_collapsed</code></pre>
 <pre class="r"><code>stopifnot(nrow(collapsed[duplicated(species)])==0)
 
 # fix header 
@@ -664,20 +768,20 @@ collapsed[,new_header := paste0(begin_header, ';', species)]
 sub = collapsed[,.(species, number_collapsed, new_header)]
 sub = sub[order(species)]
 head(sub)</code></pre>
-<pre><code>##                               species number_collapsed
-## 1: Acetobacter_tropicalis_NBRC_101654                1
-## 2:               Acetobacterium_bakii                1
-## 3:  Acidithiobacillus_thiooxidans_A01                1
-## 4:            Acinetobacter_baumannii               28
-## 5:            Acinetobacter_johnsonii                1
-## 6:          Acinetobacter_sp.YZS-X1-1                1
-##                                                                                                                                                                            new_header
-## 1:                                 &gt;ACCN:NZ_BABS01000000|Bacteria;Proteobacteria;Alphaproteobacteria;Rhodospirillales;Acetobacteraceae;Acetobacter;Acetobacter_tropicalis_NBRC_101654
-## 2:                                                              &gt;ACCN:NZ_UHJK01000000|Bacteria;Firmicutes;Clostridia;Clostridiales;Eubacteriaceae;Acetobacterium;Acetobacterium_bakii
-## 3:                       &gt;ACCN:NZ_AZMO01000000|Bacteria;Proteobacteria;Acidithiobacillia;Acidithiobacillales;Acidithiobacillaceae;Acidithiobacillus;Acidithiobacillus_thiooxidans_A01
-## 4: &gt;ACCN:NZ_JQSF01000000|Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Moraxellaceae;Acinetobacter;Acinetobacter_calcoaceticus/baumanniicomplex;Acinetobacter_baumannii
-## 5:                                              &gt;ACCN:NZ_QLLE01000000|Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Moraxellaceae;Acinetobacter;Acinetobacter_johnsonii
-## 6:                                            &gt;ACCN:NZ_JWHB01000000|Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Moraxellaceae;Acinetobacter;Acinetobacter_sp.YZS-X1-1</code></pre>
+<pre><code>##                                         species number_collapsed
+## 1:                       Abaca_bunchy_top_virus                6
+## 2:        Abalone_herpesvirus_Victoria/AUS/2009                1
+## 3: Abalone_shriveling_syndrome-associated_virus                1
+## 4:                  Abditibacterium_utsteinense                1
+## 5:                Abelson_murine_leukemia_virus                1
+## 6:             Abiotrophia_defectiva_ATCC_49176                1
+##                                                                                                                                        new_header
+## 1:                                                                           &gt;ACCN:NC_010314|Viruses;Nanoviridae;Babuvirus;Abaca_bunchy_top_virus
+## 2:                                      &gt;ACCN:NC_018874|Viruses;Herpesvirales;Malacoherpesviridae;Aurivirus;Abalone_herpesvirus_Victoria/AUS/2009
+## 3:                                                 &gt;ACCN:NC_011646|Viruses;Caudovirales;Siphoviridae;Abalone_shriveling_syndrome-associated_virus
+## 4: &gt;ACCN:NZ_NIGF01000000|Bacteria;Abditibacteriota;Abditibacteria;Abditibacteriales;Abitibacteriaceae;Abditibacterium;Abditibacterium_utsteinense
+## 5: &gt;ACCN:NC_001499|Viruses;Ortervirales;Retroviridae;Orthoretrovirinae;Gammaretrovirus;unclassified_Gammaretrovirus;Abelson_murine_leukemia_virus
+## 6:                   &gt;ACCN:NZ_ACIN03000000|Bacteria;Firmicutes;Bacilli;Lactobacillales;Aerococcaceae;Abiotrophia;Abiotrophia_defectiva_ATCC_49176</code></pre>
 <pre class="r"><code>write.table(sub, 'n_collapsed_version_per_header.txt', sep='\t', col.names=T, row.names=F, quote=F)
 
 # merge back to get version 
@@ -692,23 +796,23 @@ stopifnot(nrow(m2)==nrow(al))
 m2 = m2[,.(version, new_header)]
 head(m2)</code></pre>
 <pre><code>##              version
-## 1: NZ_QOCK01000001.1
-## 2: NZ_QOCK01000002.1
-## 3: NZ_QOCK01000003.1
-## 4: NZ_QOCK01000004.1
-## 5: NZ_QOCK01000005.1
-## 6: NZ_QOCK01000006.1
-##                                                                                                                                                       new_header
-## 1: &gt;ACCN:NZ_QOCK01000000|Bacteria;Proteobacteria;Alphaproteobacteria;Sphingomonadales;Sphingomonadaceae;Sphingomonas;Sphingomonas_ginsengisoli_Hoang_et_al._2012
-## 2: &gt;ACCN:NZ_QOCK01000000|Bacteria;Proteobacteria;Alphaproteobacteria;Sphingomonadales;Sphingomonadaceae;Sphingomonas;Sphingomonas_ginsengisoli_Hoang_et_al._2012
-## 3: &gt;ACCN:NZ_QOCK01000000|Bacteria;Proteobacteria;Alphaproteobacteria;Sphingomonadales;Sphingomonadaceae;Sphingomonas;Sphingomonas_ginsengisoli_Hoang_et_al._2012
-## 4: &gt;ACCN:NZ_QOCK01000000|Bacteria;Proteobacteria;Alphaproteobacteria;Sphingomonadales;Sphingomonadaceae;Sphingomonas;Sphingomonas_ginsengisoli_Hoang_et_al._2012
-## 5: &gt;ACCN:NZ_QOCK01000000|Bacteria;Proteobacteria;Alphaproteobacteria;Sphingomonadales;Sphingomonadaceae;Sphingomonas;Sphingomonas_ginsengisoli_Hoang_et_al._2012
-## 6: &gt;ACCN:NZ_QOCK01000000|Bacteria;Proteobacteria;Alphaproteobacteria;Sphingomonadales;Sphingomonadaceae;Sphingomonas;Sphingomonas_ginsengisoli_Hoang_et_al._2012</code></pre>
+## 1:       NC_016583.1
+## 2:     NZ_CP035949.1
+## 3:     NZ_CP035950.1
+## 4: NZ_BBIY01000001.1
+## 5: NZ_BBIY01000002.1
+## 6: NZ_BBIY01000003.1
+##                                                                                                                                                                                   new_header
+## 1:                      &gt;ACCN:NC_016583|Bacteria;Tenericutes;Mollicutes;Acholeplasmatales;Acholeplasmataceae;Candidatus_Phytoplasma;Candidatus_Phytoplasmaasteris;Brassica_napus_phytoplasma
+## 2: &gt;ACCN:NZ_CP035949|Bacteria;Tenericutes;Mollicutes;Acholeplasmatales;Acholeplasmataceae;Candidatus_Phytoplasma;Candidatus_Phytoplasmaasteris;Catharanthus_roseus_aster_yellows_phytoplasma
+## 3: &gt;ACCN:NZ_CP035949|Bacteria;Tenericutes;Mollicutes;Acholeplasmatales;Acholeplasmataceae;Candidatus_Phytoplasma;Candidatus_Phytoplasmaasteris;Catharanthus_roseus_aster_yellows_phytoplasma
+## 4:      &gt;ACCN:NZ_BBIY01000000|Bacteria;Tenericutes;Mollicutes;Acholeplasmatales;Acholeplasmataceae;Candidatus_Phytoplasma;Candidatus_Phytoplasmaasteris;Chrysanthemum_coronarium_phytoplasma
+## 5:      &gt;ACCN:NZ_BBIY01000000|Bacteria;Tenericutes;Mollicutes;Acholeplasmatales;Acholeplasmataceae;Candidatus_Phytoplasma;Candidatus_Phytoplasmaasteris;Chrysanthemum_coronarium_phytoplasma
+## 6:      &gt;ACCN:NZ_BBIY01000000|Bacteria;Tenericutes;Mollicutes;Acholeplasmatales;Acholeplasmataceae;Candidatus_Phytoplasma;Candidatus_Phytoplasmaasteris;Chrysanthemum_coronarium_phytoplasma</code></pre>
 <pre class="r"><code>nrow(m2)</code></pre>
-<pre><code>## [1] 129097</code></pre>
+<pre><code>## [1] 20485894</code></pre>
 <pre class="r"><code>length(unique(m2[,new_header]))</code></pre>
-<pre><code>## [1] 337</code></pre>
+<pre><code>## [1] 49135</code></pre>
 <pre class="r"><code>write.table(m2, 'version_to_header_map.txt', sep='\t', col.names=F, row.names=F, quote=F)</code></pre>
 
 

@@ -1,87 +1,68 @@
 # Make RefSeq database of microbial genomes 
 
-## 1. Download RefSeq files (viral, bacteria, archaea, fungi)
+## 1. Download RefSeq database
+Run [download_refseq.sh](download_refseq.sh) to download genomic files (`.fna.gz` and `.gbff.gz`) from the most recent RefSeq release. As written, it only considers files in the `viral`, `archaea`, `bacteria`, and `fungi` subdirectories of the release.  
+
+>IMPORTANT: If you change the RefSeq release subdirectories included in this step, you will likely have to adjust the curation steps in [collapse_orgs.Rmd](collapse_orgs.Rmd). Otherwise, all other scripts are agnostic to the subdirectories chosen. 
+
+Usage is `bash download_refseq.sh [/path/to/database] [NUM_CORES]`, where `[/path/to/database]` is the directory in which you would like to build the database, and `[NUM_CORES]` is the number of cores available to run the process. For example, this command will use 12 cores to download the files to `/labs/ohlab/REFSEQ`: 
 ```bash
-base=/path/to/db
-cd ${base}
-mkdir -p fna gbff 
-for db in viral bacteria archaea fungi; do 
-
-	# get a list of files on the FTP server 
-	curl --max-time 30 --retry 10 ftp://ftp.ncbi.nlm.nih.gov/refseq/release/${db}/ > ${base}/tmp
-	
-	# download FNA files 
-	cd ${base}/fna 
-	grep "genomic.fna" ${base}/tmp | sed "s/.* //" > file_list
-	while read f; do
-		if [ ! -f "${base}/fna/${f}" ]; then 
-			wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/${db}/${f}
-		fi
-	done < file_list
-
-	# download GBFF files (used to make headers)
-	cd ${base}/gbff
-	grep "genomic.gbff" ${base}/tmp | sed "s/.* //" > file_list
-	while read f; do
-		if [ ! -f "${base}/gbff/${f}" ]; then 
-			wget ftp://ftp.ncbi.nlm.nih.gov/refseq/release/${db}/${f}
-		fi
-	done < file_list
-
-	rm ${base}/tmp
-	# make sure all files were downloaded
-	COMPLETE=TRUE
-	while read f; do
-		if [ ! -f "${base}/fna/${f}" ]; then 
-			echo "ERROR: file $f not downloaded" >> ${base}/missing_files.txt
-			COMPLETE=FALSE
-		fi 
-	done < ${base}/fna/file_list 
-
-	while read f; do
-		if [ ! -f "${base}/gbff/${f}" ]; then 
-			echo "ERROR: file $f not downloaded" >> ${base}/missing_files.txt
-			COMPLETE=FALSE
-		fi 
-	done < ${base}/gbff/file_list 
-
-	if [[ $COMPLETE == "FALSE" ]]; then 
-		echo "Some $db files were not downloaded. Check missing_files.txt."
-	else 
-		echo "File download for $db complete."
-		rm ${base}/gbff/file_list
-		rm ${base}/fna/file_list
-	fi
-
-done 
+bash download_refseq.sh /labs/ohlab/REFSEQ 12
 ```
+
+This script will take some time as it has to download >4,000 files (>200 GB). Make sure that the storgae quota in the target directory is adequate. 
 
 ## 2. Install Snakemake 
 ### 2a. Install Miniconda Python3  
 If you do not already have `miniconda/3` installed, follow instructions [here](https://conda.io/en/latest/miniconda.html)
-### 2b. Install Snakemake  
+### 2b. Create a conda environment for this pipeline  
+Create a new conda environment called `format-refseq` and install `R` and `snakemake`:
 ```bash
-conda install -c conda-forge -c bioconda snakemake
+conda activate 
+conda create -n format-refseq r-base # install R
+conda install -n format-refseq snakemake
+```
+Activate the `format-refseq` environment; start `R` to install `data.table` and `knitr`:
+```
+conda activate format-refseq
+R 
+> install.packages('data.table')
+> install.packages('knitr')
+> q()
 ```
 
 ## 3. Run the pipeline 
-This could be streamlined, but it does the job.  
-
-Edit `Snakefile` for `srcdir` to point to this cloned repository and `base` to point to the same `base` path as in Step 1. The pipeline expects that you ran the bash code block above, i.e. that there are `*.1.genomic.fna.gz` files in a `fna` subdirectory and `*.1.genomic.gbff.gz` files in a `gbff` subdirectory. 
+Edit the paths in the [`Snakemake`](Snakemake) file:
+- `srcdir`: full path to this cloned repository, e.g. `/labs/ohlab/nicolerg/format_refseq`
+- `base`: same as `[/path/to/database]` in [Step 1](#download-refseq-database). This **must** include the `fna` and `gbff` subdirectories generated in [Step 1](#download-refseq-database). 
+- `tmpdir`: scratch space or another directory with \~500 GB of available space, e.g. `/tmp/refseq`. Finalized files are moved from `${tmpdir}` to `${base}/FINAL`.
+- *Optional:* If you change the default RefSeq subdirectories downloaded with [download_refseq.sh](download_refseq.sh), you will also have to modify the `KINGDOMS` list. This list should include the top-level taxonomy substrings for all organisms you download, i.e. the first ';'-delimited string in "ORGANISM" section of the `.gfbb.gz` files. These are easily identified from the intermediate `headers/n_collapsed_version_per_header.txt` output, e.g.:
+	  ```bash
+	  > sed -e '1d' n_collapsed_version_per_header.txt | cut -f3 | sed -e "s/;.*//" -e "s/.*|//" | sort | uniq
+	  Archaea
+	  Bacteria
+	  Eukaryota
+	  Viruses
+	  ```
 
 Start an interactive session with as many cores as you'd like (1 GB per core should be sufficient). Move to `srcdir` and run the pipeline, where `NUM_CORES` is the number of cores you requested:
 ```bash
-snakemake -j NUM_CORES
+snakemake -j ${NUM_CORES} 
 ```
 
-For compatibility with a job submission system, see the [Snakemake docs](https://snakemake.readthedocs.io/en/v5.1.4/executable.html#cluster-execution).
+Alternatively, write an `sbatch` script with the desired resources, and submit the job to the queue. For example:
+```
+
+```
+
+For more compatibility with job submission systems, see the [Snakemake docs](https://snakemake.readthedocs.io/en/v5.1.4/executable.html#cluster-execution).  
 
 ## Outputs
 Look in the `FINAL` subdirectory for main outputs. 
 ### `microbe.*.fa.gz`
 Whenever possible, each .fa file is limited to file size `max_size` specified in the `split_fna` rule. Exceptions are when a single genome is larger than `max_size`. The header for each sequence includes an NCBI accession and full taxonomy string for the organism; these headers correspond to column 1 in `all_lengths.txt` (see below).  
 
-Sequences from the same organism, i.e. with identical taxonomy strings, are concatenated into a single "N\*200"-delimited sequence. If the same organism corresponds with multiple NCBI accessions, the first is taken. If necessary, you can find the full version-to-accession map in the `headers/all` subdirectory. 
+Sequences from the same organism, i.e. with identical taxonomy strings, are concatenated into a single "N\*100"-delimited sequence. If the same organism corresponds with multiple NCBI accessions, the first is taken. If necessary, you can find the full version-to-accession map in the `headers/all` subdirectory. 
 
 ### `all_lengths.txt`
 Each line has format `>ACCN:[universal_accession]|[taxonomy_string]	[genome_length]`. For example:

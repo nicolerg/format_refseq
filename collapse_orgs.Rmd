@@ -5,14 +5,15 @@ date: "4/30/2020"
 output: html_document
 params:
   indir: '/oak/stanford/groups/smontgom/nicolerg/REFSEQ/headers'
+  kingdoms: c('Bacteria','Eukaryota','Viruses','Archaea')
 ---
 
 ```{r setup, include=FALSE}
 INDIR = params$indir
+KINGDOMS = params$kingdoms
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = INDIR)
 library(data.table)
-library(ggplot2)
 ```
 
 ```{r fix weird tax}
@@ -24,8 +25,8 @@ if(!file.exists('all_lengths.tmp.RData')){
   all_lengths = unique(all_lengths[,.(header, original_species)])
   
   all_lengths[, kingdom := sapply(header, function(x) unname(unlist(strsplit(gsub('.*\\|','',x), ';')))[1])]
-  broken = all_lengths[!kingdom %in% c('Bacteria','Eukaryota','Viruses','Archaea')]
-  correct = all_lengths[kingdom %in% c('Bacteria','Eukaryota','Viruses','Archaea')]
+  broken = all_lengths[!kingdom %in% KINGDOMS]
+  correct = all_lengths[kingdom %in% KINGDOMS]
   
   fix_header = function(x){
     accn = unname(unlist(strsplit(x,'\\|')))[1]
@@ -36,6 +37,8 @@ if(!file.exists('all_lengths.tmp.RData')){
       tax = gsub('.*Viruses;','Viruses;',tax)
     }else if(grepl('bacteri|Salmonella|Staphylococcus|Lactobacillus|Francisella|Bacteroides|Leptospira|Klebsiella|Neorhizobium',x)){
       tax = paste0('Bacteria;',tax)
+    }else{
+      stop(sprintf('Unable to determine kingdom: %s',x))
     }
     new = sprintf('%s|%s',accn,tax)
     return(new)

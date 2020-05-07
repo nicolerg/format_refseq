@@ -6,20 +6,22 @@ import re
 srcdir = '/oak/stanford/groups/smontgom/nicolerg/src/format_refseq'
 base = '/oak/stanford/groups/smontgom/nicolerg/REFSEQ'
 tmpdir = '/tmp/refseq'
+KINGDOMS = ['Bacteria','Eukaryota','Viruses','Archaea']
+
+
 os.chdir(base)
-
 SAMPLES = subprocess.check_output('ls gbff/*.gz | sed "s/\.genomic.*//" | sed "s/^gbff\///"', shell=True).decode().strip().split()
-
 if os.path.exists(tmpdir):
     dateTimeObj = datetime.now()
     timestampStr = dateTimeObj.strftime("%d%b%Y_%H-%M-%S")
     tmpdir = tmpdir + '/' + timestampStr
-
 os.mkdir(tmpdir)
+
 
 rule all:
     input:
-        'log/merge_orgs/merge_orgs.done'
+        'FINAL/all_lengths.txt',
+        'log/transfer.done'
 
 
 rule format_headers:
@@ -48,14 +50,15 @@ rule collapse_species:
         header_map = 'headers/all_genomic.headers_map.txt',
         script = srcdir + '/collapse_orgs.Rmd'
     params:
-        indir = base + '/headers'
+        indir = base + '/headers',
+        kingdoms = "c('{}')".format("','".join(KINGDOMS))
     output:
         'headers/original_taxonomy.txt',
         'headers/version_to_header_map.txt',
         'headers/n_collapsed_version_per_header.txt'
     shell:
         '''
-        Rscript -e "rmarkdown::render('{input.script}', params = list(indir = '{params.indir}'))"
+        Rscript -e "rmarkdown::render('{input.script}', params = list(indir = '{params.indir}', kingdoms = '{params.kingdoms}'))"
         '''
 
 
@@ -95,3 +98,37 @@ rule merge_species:
         '''
 
 
+rule genome_length:
+    input:
+        'log/merge_orgs/merge_orgs.done',
+        script = srcdir + '/genome_length.sh'
+    output:
+        temp('log/genome_length/genome_length.done')
+    threads: workflow.cores
+    params:
+        tmp = tmpdir
+    log:
+        'log/genome_length/all.log'
+    shell:
+        '''
+        bash {input.script} {params.tmp} {threads} > {log} 2>&1
+        touch {output}
+        '''
+
+
+rule compress_move:
+    input:
+        'log/genome_length/genome_length.done',
+        script = srcdir + '/compress_move.sh'
+    output:
+        'FINAL/all_lengths.txt',
+        controlflow = temp('log/transfer.done')
+    threads: workflow.cores
+    params:
+        tmp = tmpdir + '/merged',
+        outdir = base + '/FINAL'
+    shell:
+        '''
+        bash {input.script} {params.tmp} {params.outdir} {threads}
+        touch {output.controlflow}
+        '''
