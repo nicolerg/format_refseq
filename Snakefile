@@ -1,12 +1,26 @@
+__author__ = 'nicolerg'
+__date__ = '5 May 2020'
+
 import os
 import subprocess
 from datetime import datetime
 import re 
 
+######################################################################
+## THESE ARE THE ONLY LINES THAT NEED TO BE USER-MODIFIED
+##
 srcdir = '/oak/stanford/groups/smontgom/nicolerg/src/format_refseq'
 base = '/oak/stanford/groups/smontgom/nicolerg/REFSEQ'
 tmpdir = '/tmp/refseq'
+<<<<<<< HEAD
 KINGDOMS = ['Bacteria','Eukaryota','Viruses','Archaea']
+=======
+##
+#######################################################################
+
+
+os.chdir(base)
+>>>>>>> de1abb5a033656d6c0664580b49c7f0eb6680091
 
 
 os.chdir(base)
@@ -96,6 +110,7 @@ rule merge_species:
         bash {input.script} {params.tmp} {threads} > {log} 2>&1
         touch {output}
         '''
+<<<<<<< HEAD
 
 
 rule genome_length:
@@ -132,3 +147,5 @@ rule compress_move:
         bash {input.script} {params.tmp} {params.outdir} {threads}
         touch {output.controlflow}
         '''
+=======
+>>>>>>> de1abb5a033656d6c0664580b49c7f0eb6680091
