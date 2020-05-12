@@ -68,7 +68,7 @@ rule collapse_species:
         'FINAL/collapse_orgs.html'
     shell:
         '''
-        Rscript -e "rmarkdown::render('{input.script}', params = list(indir = '{params.indir}', kingdoms = '{params.kingdoms}'))"
+        Rscript -e "rmarkdown::render('{input.script}', params = list(indir = '{params.indir}', kingdoms = {params.kingdoms}))"
         mv {params.srcdir}/collapse_orgs.html {params.outdir}
         '''
 

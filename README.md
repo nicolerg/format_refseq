@@ -28,6 +28,8 @@ As of Release 99 (March 5, 2020), there are >70,000 bacterial, archaeal, viral, 
 
 This pipeline is written to be compatible with any version of RefSeq.  
 
+>NOTE: The pipeline result for RefSeq Release 99 is currently available [here](http://public.scg.stanford.edu/nicolerg/refseq_db/).  
+
 ## 1. Clone this repository 
 Navigate to a directory where you would like to save the code for this pipeline. Then clone this repository and move into the `format_refseq` directory. The path to `format_refseq` is referred to as `${srcdir}`.
 ```bash 
@@ -51,18 +53,20 @@ bash download_refseq.sh /labs/ohlab/REFSEQ 12
 ### 3a. Install Miniconda Python3  
 If you do not already have `miniconda/3` installed, follow instructions [here](https://conda.io/en/latest/miniconda.html)
 ### 3b. Create a new conda environment 
-Create a new conda environment called `format-refseq` and install `R` and `snakemake`:
+Create a new conda environment called `format-refseq` and install `R` and `snakemake`. Note that `conda install` has trouble identifying the most recent version of software and sometimes installs much-older versions. The versions indicated below are close to the newest version at the time of writing this, but I would recommend indicating the newest version possible the first time you install these tools.  
 ```bash
 conda activate # activate base conda 
-conda create -n format-refseq r-base # install R
-conda install -n format-refseq snakemake # install snakemake 
+conda create -n format-refseq 
+conda install -n format-refseq r-base=3.6.1 # install R, at least 3.6.1
+conda install -n format-refseq snakemake=5.16.0 # install snakemake, at least 5.16.0
 ```
-Activate the `format-refseq` environment; start `R` to install `data.table` and `knitr`:
+Activate the `format-refseq` environment; start `R` to install `data.table`, `knitr`, and `rmarkdown`:
 ```
 conda activate format-refseq
 R 
 > install.packages('data.table')
 > install.packages('knitr')
+> install.packages('rmarkdown')
 > q()
 ```
 
