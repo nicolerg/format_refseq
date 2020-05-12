@@ -10,18 +10,11 @@ import re
 ## THESE ARE THE ONLY LINES THAT NEED TO BE USER-MODIFIED
 ##
 srcdir = '/oak/stanford/groups/smontgom/nicolerg/src/format_refseq'
-base = '/oak/stanford/groups/smontgom/nicolerg/REFSEQ'
+base = '/oak/stanford/groups/smontgom/nicolerg/REFSEQ/TEST'
 tmpdir = '/tmp/refseq'
-<<<<<<< HEAD
 KINGDOMS = ['Bacteria','Eukaryota','Viruses','Archaea']
-=======
 ##
 #######################################################################
-
-
-os.chdir(base)
->>>>>>> de1abb5a033656d6c0664580b49c7f0eb6680091
-
 
 os.chdir(base)
 SAMPLES = subprocess.check_output('ls gbff/*.gz | sed "s/\.genomic.*//" | sed "s/^gbff\///"', shell=True).decode().strip().split()
@@ -65,14 +58,18 @@ rule collapse_species:
         script = srcdir + '/collapse_orgs.Rmd'
     params:
         indir = base + '/headers',
-        kingdoms = "c('{}')".format("','".join(KINGDOMS))
+        kingdoms = "c('{}')".format("','".join(KINGDOMS)),
+        srcdir = srcdir,
+        outdir = base + '/FINAL'
     output:
         'headers/original_taxonomy.txt',
         'headers/version_to_header_map.txt',
-        'headers/n_collapsed_version_per_header.txt'
+        'headers/n_collapsed_version_per_header.txt',
+        'FINAL/collapse_orgs.html'
     shell:
         '''
         Rscript -e "rmarkdown::render('{input.script}', params = list(indir = '{params.indir}', kingdoms = '{params.kingdoms}'))"
+        mv {params.srcdir}/collapse_orgs.html {params.outdir}
         '''
 
 
@@ -110,7 +107,6 @@ rule merge_species:
         bash {input.script} {params.tmp} {threads} > {log} 2>&1
         touch {output}
         '''
-<<<<<<< HEAD
 
 
 rule genome_length:
@@ -147,5 +143,3 @@ rule compress_move:
         bash {input.script} {params.tmp} {params.outdir} {threads}
         touch {output.controlflow}
         '''
-=======
->>>>>>> de1abb5a033656d6c0664580b49c7f0eb6680091

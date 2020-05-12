@@ -1,4 +1,17 @@
 # Make curated database of RefSeq microbial species 
+
+## Table of Contents   
+- [Introduction](#introduction)  
+- [1. Clone this repository](#1-clone-this-repository)  
+- [2. Download RefSeq database](#2-download-refseq-database)  
+- [3. Install Snakemake](#3-install-snakemake)  
+  - [3a. Install Miniconda Python3](#3a-install-miniconda-python3)  
+  - [3b. Create a new conda environment](#3b-create-a-new-conda-environment)  
+- [4. Run the pipeline](#4-run-the-pipeline)  
+- [Outputs](#outputs)  
+- [General workflow](#general-workflow)  
+
+## Introduction 
 This pipeline is designed to collapse microbial genomic sequences from the RefSeq database at the species level.  
 
 From the RefSeq documentation:   
@@ -15,7 +28,14 @@ As of Release 99 (March 5, 2020), there are >70,000 bacterial, archaeal, viral, 
 
 This pipeline is written to be compatible with any version of RefSeq.  
 
-## 1. Download RefSeq database
+## 1. Clone this repository 
+Navigate to a directory where you would like to save the code for this pipeline. Then clone this repository and move into the `format_refseq` directory. The path to `format_refseq` is referred to as `${srcdir}`.
+```bash 
+git clone https://github.com/nicolerg/format_refseq.git
+cd format_refseq
+```
+
+## 2. Download RefSeq database
 Run [download_refseq.sh](download_refseq.sh) to download genomic files (`.genomic.fna.gz` and `.genomic.gbff.gz`) from the most recent RefSeq release. As written, it only considers files in the **viral, archaea, bacteria, and fungi** subdirectories of the release. See all possible subdirectories here: **ftp://ftp.ncbi.nlm.nih.gov/refseq/release/** (GitHub .md does not currently support hyperlinks for FTP sites; you have to copy and paste the address).
 
 >IMPORTANT: If you change the RefSeq release subdirectories included in this step, you will likely have to adjust the curation steps in [collapse_orgs.Rmd](collapse_orgs.Rmd). Otherwise, all other scripts are agnostic to the subdirectories chosen. 
@@ -27,10 +47,10 @@ Usage is `bash download_refseq.sh [/path/to/database] [NUM_CORES]`, where `[/pat
 bash download_refseq.sh /labs/ohlab/REFSEQ 12
 ```
 
-## 2. Install Snakemake 
-### 2a. Install Miniconda Python3  
+## 3. Install Snakemake 
+### 3a. Install Miniconda Python3  
 If you do not already have `miniconda/3` installed, follow instructions [here](https://conda.io/en/latest/miniconda.html)
-### 2b. Create a conda environment for this pipeline  
+### 3b. Create a new conda environment 
 Create a new conda environment called `format-refseq` and install `R` and `snakemake`:
 ```bash
 conda activate # activate base conda 
@@ -46,19 +66,19 @@ R
 > q()
 ```
 
-## 3. Run the pipeline 
+## 4. Run the pipeline 
 Edit the paths in the [`Snakemake`](Snakemake) file:
 - `srcdir`: full path to this cloned repository, e.g. `/labs/ohlab/nicolerg/format_refseq`
 - `base`: same as `[/path/to/database]` in [Step 1](#download-refseq-database). This **must** include the `fna` and `gbff` subdirectories generated in [Step 1](#download-refseq-database). 
 - `tmpdir`: scratch space or another directory with \~500 GB of available space, e.g. `/tmp/refseq`. Finalized files are moved from `${tmpdir}` to `${base}/FINAL`.
 - *Optional:* If you change the default RefSeq subdirectories downloaded with [download_refseq.sh](download_refseq.sh), you will also have to modify the `KINGDOMS` list. This list should include the top-level taxonomy substrings for all organisms you download, i.e. the first ';'-delimited string in "ORGANISM" section of the `.gfbb.gz` files. These are easily identified from the intermediate `headers/n_collapsed_version_per_header.txt` output, e.g.:
-	  ```bash
-	  > sed -e '1d' n_collapsed_version_per_header.txt | cut -f3 | sed -e "s/;.*//" -e "s/.*|//" | sort | uniq
-	  Archaea
-	  Bacteria
-	  Eukaryota
-	  Viruses
-	  ```
+      ```bash
+      > sed -e '1d' n_collapsed_version_per_header.txt | cut -f3 | sed -e "s/;.*//" -e "s/.*|//" | sort | uniq  
+      Archaea  
+      Bacteria  
+      Eukaryota  
+      Viruses  
+      ```
 
 The more cores that are allocated, the faster this pipeline will run. Choose a number of cores that will be available in a reasonable amount of time based on your experience with the cluster you are using. 
 
@@ -76,7 +96,7 @@ If the dry run completes without error, start the pipeline for real:
 snakemake -j ${NUM_CORES} --latency-wait=90
 ```
 ### Run the pipeline with a job submission system 
-Write an `sbatch` or `qsub` script with a specified number of CPUs `NUM_CORES` >1 and sufficient RAM **(at least 5 GB per CPU)**. Here is an example of an `sbatch` script where `NUM_CORES=12`:
+Write an `sbatch` or `qsub` script with a specified number of CPUs `NUM_CORES` >1 and sufficient RAM **(at least 5 GB per CPU)**. Here is an example of an `sbatch` script where `NUM_CORES=12`. **The Snakemake `-j` parameter must match the SBATCH `--cpus-per-task` parameter.**
 ```bash
 #!/bin/bash
 #SBATCH --job-name=format_refseq
@@ -90,10 +110,13 @@ Write an `sbatch` or `qsub` script with a specified number of CPUs `NUM_CORES` >
 conda activate format-refseq
 snakemake -j 12 -n --latency-wait=90
 ```
-Submit the job for a dry run. If it completes without error, edit the last line of the `sbatch` script to be `snakemake -j 12 --latency-wait=90` and submit the job. 
+Submit the job for a dry run (indicated by `-n` flag). If it completes without error, edit the last line of the `sbatch` script to remove the `-n` or `--dry-run` flag and submit the job. 
 
 ## Outputs
 Look in the `FINAL` subdirectory for main outputs. 
+
+### collapse_orgs.html
+Open this report in your browser to get details about how species were collapsed.  
 
 ### {pseudokingdom}.tar.gz
 Each tarball contains an individual `{accession}.fna.gz` file for each species in the pseudokingdom. The header for each `{accession}.fna.gz` sequence includes an NCBI accession and full taxonomy string for the species; these headers correspond to column 1 in `all_lengths.txt` (see below).  
