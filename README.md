@@ -71,14 +71,14 @@ Edit the paths in the [`Snakemake`](Snakemake) file:
 - `srcdir`: full path to this cloned repository, e.g. `/labs/ohlab/nicolerg/format_refseq`
 - `base`: same as `[/path/to/database]` in [Step 1](#download-refseq-database). This **must** include the `fna` and `gbff` subdirectories generated in [Step 1](#download-refseq-database). 
 - `tmpdir`: scratch space or another directory with \~500 GB of available space, e.g. `/tmp/refseq`. Finalized files are moved from `${tmpdir}` to `${base}/FINAL`.
-- *Optional:* If you change the default RefSeq subdirectories downloaded with [download_refseq.sh](download_refseq.sh), you will also have to modify the `KINGDOMS` list. This list should include the top-level taxonomy substrings for all organisms you download, i.e. the first ';'-delimited string in "ORGANISM" section of the `.gfbb.gz` files. These are easily identified from the intermediate `headers/n_collapsed_version_per_header.txt` output, e.g.:
-      ```bash
-      > sed -e '1d' n_collapsed_version_per_header.txt | cut -f3 | sed -e "s/;.*//" -e "s/.*|//" | sort | uniq  
-      Archaea  
-      Bacteria  
-      Eukaryota  
-      Viruses  
-      ```
+- *Optional:* If you change the default RefSeq subdirectories downloaded with [download_refseq.sh](download_refseq.sh), you will also have to modify the `KINGDOMS` list. This list should include the top-level taxonomy substrings for all organisms you download, i.e. the first ';'-delimited string in "ORGANISM" section of the `.gfbb.gz` files. These are easily identified from the intermediate `headers/n_collapsed_version_per_header.txt` output, e.g.:  
+    ```bash
+    > sed -e '1d' n_collapsed_version_per_header.txt | cut -f3 | sed -e "s/;.*//" -e "s/.*|//" | sort | uniq  
+    Archaea   
+    Bacteria  
+    Eukaryota  
+    Viruses  
+    ```
 
 The more cores that are allocated, the faster this pipeline will run. Choose a number of cores that will be available in a reasonable amount of time based on your experience with the cluster you are using. 
 
